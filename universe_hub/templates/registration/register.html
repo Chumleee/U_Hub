@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registro - Universe Hub</title>
+    <style>
+        :root {
+            --indigo-electric: #4f46e5;
+            --white: #ffffff;
+            --gray-light: #f3f4f6;
+            --gray-slate: #64748b;
+        }
+        body { 
+            font-family: system-ui, -apple-system, sans-serif;
+            background: var(--gray-light);
+            margin: 0; padding: 2rem;
+            color: var(--gray-slate);
+        }
+        .container {
+            max-width: 400px; margin: 0 auto;
+            background: var(--white); padding: 2rem;
+            border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .logo { color: var(--indigo-electric); font-size: 1.8rem; font-weight: bold; text-align: center; margin-bottom: 2rem; }
+        input { width: 100%; padding: 0.75rem; margin: 0.5rem 0; border: 1px solid #e5e7eb; border-radius: 8px; box-sizing: border-box; }
+        button { width: 100%; padding: 0.75rem; background: var(--indigo-electric); color: white; border: none; border-radius: 8px; font-size: 1rem; cursor: pointer; }
+        button:hover { background: #3730a3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">Universe Hub</div>
+            <form method="post">
+                {% csrf_token %}
+                
+                <div>{{ form.username.label_tag }}{{ form.username }}</div>
+                <div>{{ form.email.label_tag }}{{ form.email }}</div>
+                <div>{{ form.university.label_tag }}{{ form.university }}</div>
+                <div>{{ form.major.label_tag }}{{ form.major }}</div>
+                <div>{{ form.semester.label_tag }}{{ form.semester }}</div>
+                <div>{{ form.bio.label_tag }}{{ form.bio }}</div>
+                
+                <div>{{ form.password1.label_tag }}{{ form.password1 }}</div>
+                <div>{{ form.password2.label_tag }}{{ form.password2 }}</div>
+                
+                <button type="submit">Crear cuenta</button>
+            </form>
+
+        <p style="text-align: center; margin-top: 1rem;">
+            ¿Ya tienes cuenta? <a href="{% url 'login' %}" style="color: var(--indigo-electric);">Inicia sesión</a>
+        </p>
+    </div>
+</body>
+</html>

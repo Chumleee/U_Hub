@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Universe Hub - Feed Principal</title>
+    <style>
+        :root {
+            --indigo-electric: #4f46e5;
+            --white: #ffffff;
+            --gray-light: #f3f4f6;
+            --gray-slate: #64748b;
+        }
+        body { 
+            font-family: system-ui, sans-serif;
+            background: var(--gray-light);
+            margin: 0; padding: 0;
+            color: var(--gray-slate);
+        }
+        .header {
+            background: var(--white);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .logo { color: var(--indigo-electric); font-size: 1.5rem; font-weight: bold; }
+        .feed {
+            max-width: 1200px; margin: 2rem auto;
+            display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 2rem; padding: 0 2rem;
+        }
+        .post-card {
+            background: var(--white);
+            padding: 1.5rem; border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .user-info { font-weight: 500; color: var(--indigo-electric); }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">Universe Hub</div>
+        <div>
+            {% if user.is_authenticated %}
+                Hola, {{ user.username }} | <a href="/accounts/logout/">Salir</a>
+            {% else %}
+                <a href="/accounts/login/">Iniciar sesión</a> | <a href="/register/">Registrarse</a>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="feed">
+        <div>Sidebar izquierda (habilidades)</div>
+        <div>
+            <h2>Feed Principal</h2>
+            <div class="post-card">
+                <div class="user-info">{{ user.username }} - Semestre {{ user.semester }}</div>
+                <p>Bienvenido a Universe Hub. ¡Crea tu primer proyecto!</p>
+            </div>
+        </div>
+        <div>Sidebar derecha (proyectos sugeridos)</div>
+    </div>
+</body>
+</html>
