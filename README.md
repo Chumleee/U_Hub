@@ -21,16 +21,16 @@ Pendiente
 ##  Instalación
 Servidor local Xampp Mysql
 
-Python pip{
-  Package        Version
-  -------------- -------
-  asgiref        3.11.1
-  Django         4.2.29
-  django-allauth 65.14.3
-  pip            24.0
-  PyMySQL        1.1.2
-  sqlparse       0.5.5
-  }
+Python pip{<br>
+  Package        Version<br>
+  -------------- -------<br>
+  asgiref        3.11.1<br>
+  Django         4.2.29<br>
+  django-allauth 65.14.3<br>
+  pip            24.0<br>
+  PyMySQL        1.1.2<br>
+  sqlparse       0.5.5<br>
+  }<br>
 
 ##  Configuración
 Pendiente
