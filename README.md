@@ -19,9 +19,9 @@ Pendiente
 Pendiente
 
 ##  Instalación
-Servidor local Xampp Mysql
-
-Python pip{<br>
+Servidor local Xampp Mysql<br>
+<br>
+Python pip<br>
   Package        Version<br>
   -------------- -------<br>
   asgiref        3.11.1<br>
@@ -30,7 +30,6 @@ Python pip{<br>
   pip            24.0<br>
   PyMySQL        1.1.2<br>
   sqlparse       0.5.5<br>
-  }<br>
 
 ##  Configuración
 Pendiente
