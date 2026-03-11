@@ -21,4 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),  # login/logout/logout
     path('', include('users.urls')),  # rutas de la app users
+    path('', include('users.urls')),  # ← Esto incluye users/urls.py
 ]

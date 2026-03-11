@@ -48,16 +48,64 @@
         </div>
     </div>
     
-    <div class="feed">
-        <div>Sidebar izquierda (habilidades)</div>
-        <div>
-            <h2>Feed Principal</h2>
-            <div class="post-card">
-                <div class="user-info">{{ user.username }} - Semestre {{ user.semester }}</div>
-                <p>Bienvenido a Universe Hub. ¡Crea tu primer proyecto!</p>
-            </div>
+    <<div class="feed">
+    <!-- Columna izquierda: info del usuario -->
+    <div>
+        <div class="post-card">
+            <h3>Tu perfil académico</h3>
+            <p><strong>{{ user.username }}</strong></p>
+            <p>{{ user.university }}</p>
+            <p>{{ user.major }} - Semestre {{ user.semester }}</p>
+            <p style="margin-top: 0.5rem;">{{ user.bio }}</p>
         </div>
-        <div>Sidebar derecha (proyectos sugeridos)</div>
     </div>
+
+    <!-- Columna central: feed de posts -->
+    <div>
+        <h2>Feed de Universe Hub</h2>
+
+        {% for post in posts %}
+            <div class="post-card" style="margin-top: 1rem;">
+                <div class="user-info">
+                    {{ post.author.username }} · {{ post.author.major }} · Sem {{ post.author.semester }}
+                </div>
+                <div style="font-size: 0.85rem; color: #9ca3af; margin-top: 0.25rem;">
+                    {{ post.created_at|date:"d/m/Y H:i" }}
+                </div>
+                <p style="margin-top: 0.75rem;">{{ post.content }}</p>
+
+                <div style="margin-top: 0.75rem; font-size: 0.85rem; color: #6b7280;">
+                    {{ post.likes.count }} me gusta · {{ post.comments.count }} comentarios
+                </div>
+            </div>
+        {% empty %}
+            <div class="post-card" style="margin-top: 1rem;">
+                <p>No hay publicaciones todavía. Crea tu primer post académico.</p>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Columna derecha: proyectos abiertos -->
+    <div>
+        <div class="post-card">
+            <h3>Proyectos abiertos</h3>
+            {% for project in projects %}
+                <div style="margin-top: 0.75rem;">
+                    <strong>{{ project.title }}</strong><br>
+                    <span style="font-size: 0.85rem; color: #6b7280;">
+                        {{ project.owner.username }} · {{ project.owner.major }}
+                    </span>
+                    <p style="margin: 0.25rem 0 0.5rem 0;">{{ project.summary }}</p>
+                    <span style="font-size: 0.8rem; color: #9ca3af;">
+                        Skills: {{ project.required_skills }}
+                    </span>
+                </div>
+            {% empty %}
+                <p>No hay proyectos abiertos aún.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
