@@ -3,8 +3,6 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from .forms import StudentUserCreationForm  # ← Cambio aquí
 from .models import StudentUser
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
 
 from posts.models import Post, Project
 
