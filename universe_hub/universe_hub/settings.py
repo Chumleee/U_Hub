@@ -166,6 +166,17 @@ SOCIALACCOUNT_LOGIN_ON_GET = True
 # Indica a dónde ir tras un login exitoso
 LOGIN_REDIRECT_URL = 'home'
 
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'AUTH_PARAMS': {
+            'prompt': 'select_account',
+        },
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+    }
+}
 # Parche de compatibilidad para MariaDB 10.4 y XAMPP
 from django.db.backends.mysql.features import DatabaseFeatures
 
