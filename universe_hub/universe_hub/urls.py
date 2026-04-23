@@ -18,8 +18,11 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('accounts/', include('django.contrib.auth.urls')),  # login/logout/logout
-    path('', include('users.urls')),  # rutas de la app users
-    path('', include('users.urls')),  # ← Esto incluye users/urls.py
+   path('admin/', admin.site.urls),
+    
+    # CAMBIA ESTA LÍNEA: Debe apuntar a allauth.urls
+    path('accounts/', include('allauth.urls')), 
+    
+    # DEJA ESTA LÍNEA SOLO UNA VEZ:
+    path('', include('users.urls')),
 ]

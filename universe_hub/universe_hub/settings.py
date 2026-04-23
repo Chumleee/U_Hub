@@ -37,11 +37,29 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites', # Asegúrate de que solo esté una vez
+
+
+   'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google', # ESTA es la única que debe decir goog
 
     'users',
     'posts',
     'projects',
 ]
+# ID del sitio (necesario para allauth)
+SITE_ID = 1
+# Configuración de autenticación
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+# Opciones adicionales
+SOCIALACCOUNT_LOGIN_ON_GET = True # Evita una página intermedia de confirmación
+LOGIN_REDIRECT_URL = 'home'
+ACCOUNT_LOGOUT_REDIRECT_URL = 'login'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -51,6 +69,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'universe_hub.urls'
@@ -142,3 +161,7 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'  # para producción, más adelante
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Evita que Allauth pida un formulario intermedio
+SOCIALACCOUNT_LOGIN_ON_GET = True
+# Indica a dónde ir tras un login exitoso
+LOGIN_REDIRECT_URL = 'home'
