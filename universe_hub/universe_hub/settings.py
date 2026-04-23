@@ -166,6 +166,7 @@ SOCIALACCOUNT_LOGIN_ON_GET = True
 # Indica a dónde ir tras un login exitoso
 LOGIN_REDIRECT_URL = 'home'
 
+#obliga al programa a escoger cuenta de google
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'AUTH_PARAMS': {
