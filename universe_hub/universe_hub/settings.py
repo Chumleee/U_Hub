@@ -165,3 +165,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SOCIALACCOUNT_LOGIN_ON_GET = True
 # Indica a dónde ir tras un login exitoso
 LOGIN_REDIRECT_URL = 'home'
+
+# Parche de compatibilidad para MariaDB 10.4 y XAMPP
+from django.db.backends.mysql.features import DatabaseFeatures
+
+# 1. Saltarse la validación de versión mínima
+from django.db.backends.base.base import BaseDatabaseWrapper
+BaseDatabaseWrapper.check_database_version_supported = lambda self: None
+
+# 2. Desactivar explícitamente el soporte de RETURNING en las características de MySQL
+DatabaseFeatures.can_return_columns_from_insert = False
+DatabaseFeatures.can_return_rows_from_bulk_insert = False
