@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Completar Perfil - Universe Hub</title>
+    <style>
+        :root {
+            --indigo-electric: #4f46e5;
+            --gray-light: #f3f4f6;
+        }
+
+        body {
+            font-family: system-ui, sans-serif;
+            background: var(--gray-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h2 {
+            color: var(--indigo-electric);
+            margin-top: 0;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            margin: 0.5rem 0 1.25rem 0;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            background: var(--indigo-electric);
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #4338ca;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <h2>¡Casi listo, {{ user.username }}!</h2>
+        <p>Completa tu información académica para empezar a colaborar.</p>
+        <form method="post">
+            {% csrf_token %}
+            <label>Centro Universitario / Universidad</label>
+            <input type="text" name="university" placeholder="Ej. CUCEI" required>
+
+            <label>Carrera</label>
+            <input type="text" name="major" placeholder="Ej. Ingeniería en Computación" required>
+
+            <label>Semestre actual</label>
+            <input type="number" name="semester" min="1" max="15" value="1" required>
+
+            <button type="submit">Guardar y continuar</button>
+        </form>
+    </div>
+</body>
+
+</html>

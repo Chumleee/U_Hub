@@ -12,7 +12,7 @@ def register(request):
         form = StudentUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()  # Guarda el StudentUser en MySQL
-            login(request, user) # Inicia sesión directamente con el objeto creado
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             return redirect('home')
        
     else:
@@ -22,10 +22,13 @@ def register(request):
 
 @login_required
 def home(request):
-    # Posts más recientes
-    posts = Post.objects.select_related('author').order_by('-created_at')[:20]
+    # --- LÓGICA CORREGIDA ---
+    # Si NO es administrador Y NO tiene perfil completo, lo mandamos al formulario
+    if not request.user.is_staff and (not request.user.university or not request.user.major):
+        return redirect('complete_profile')
+    # ------------------------
 
-    # Proyectos abiertos más recientes
+    posts = Post.objects.select_related('author').order_by('-created_at')[:20]
     projects = Project.objects.select_related('owner').filter(
         status='open'
     ).order_by('-created_at')[:10]
@@ -37,6 +40,17 @@ def home(request):
     return render(request, 'home.html', context)
 
 
+# --- NUEVA VISTA PARA COMPLETAR PERFIL ---
 @login_required
-def profile(request):
-    return render(request, 'profile.html', {'user': request.user})
+def complete_profile(request):
+    if request.method == 'POST':
+        user = request.user
+        # Guardamos lo que el usuario escriba en el formulario
+        user.university = request.POST.get('university')
+        user.major = request.POST.get('major')
+        # También podrías pedir el semestre si quieres que no quede en 0
+        user.semester = request.POST.get('semester', 1) 
+        user.save()
+        return redirect('home')
+    
+    return render(request, 'users/complete_profile.html')

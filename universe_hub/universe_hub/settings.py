@@ -56,10 +56,15 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
-# Opciones adicionales
-SOCIALACCOUNT_LOGIN_ON_GET = True # Evita una página intermedia de confirmación
+# Configuración de redirecciones
 LOGIN_REDIRECT_URL = 'home'
-ACCOUNT_LOGOUT_REDIRECT_URL = 'login'
+ACCOUNT_LOGOUT_REDIRECT_URL = 'account_login'  # Redirige al login tras salir
+
+# Evita que Allauth pida confirmación para iniciar sesión con Google
+SOCIALACCOUNT_LOGIN_ON_GET = True
+
+# Opcional: Evita confirmación al cerrar sesión (sale directo)
+ACCOUNT_LOGOUT_ON_GET = False
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -161,10 +166,7 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'  # para producción, más adelante
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Evita que Allauth pida un formulario intermedio
-SOCIALACCOUNT_LOGIN_ON_GET = True
-# Indica a dónde ir tras un login exitoso
-LOGIN_REDIRECT_URL = 'home'
+
 
 # Parche de compatibilidad para MariaDB 10.4 y XAMPP
 from django.db.backends.mysql.features import DatabaseFeatures
