@@ -37,24 +37,37 @@
             <h2>Feed de Universe Hub</h2>
 
             {% for post in posts %}
-                <div class="post-card" style="margin-top: 1rem;">
-                    <div class="user-info">
-                        {{ post.author.username }} · {{ post.author.major }} · Sem {{ post.author.semester }}
+                <article class="post-card">
+                    <div class="post-header">
+                        <div class="post-author">{{ post.author.username }}</div>
+                        <div class="post-date">{{ post.created_at|date:"d/m/Y H:i" }}</div>
                     </div>
 
-                    <div style="font-size: 0.85rem; color: #9ca3af; margin-top: 0.25rem;">
-                        {{ post.created_at|date:"d/m/Y H:i" }}
-                    </div>
+                    {% if post.content %}
+                        <p class="post-content">{{ post.content }}</p>
+                    {% endif %}
 
-                    <p style="margin-top: 0.75rem;">{{ post.content }}</p>
+                    {% if post.image %}
+                        <div class="post-image-wrapper">
+                            <img src="{{ post.image.url }}" alt="Imagen de la publicación" class="post-image">
+                        </div>
+                    {% endif %}
 
-                    <div style="margin-top: 0.75rem; font-size: 0.85rem; color: #6b7280;">
-                        {{ post.likes.count }} me gusta · {{ post.comments.count }} comentarios
-                    </div>
-                </div>
+                    {% if post.attachment %}
+                        <div class="post-attachment">
+                            <span class="post-attachment-badge">{{ post.attachment_extension|upper }}</span>
+                            <div class="post-attachment-info">
+                                <strong>{{ post.attachment_name }}</strong>
+                                <a href="{{ post.attachment.url }}" target="_blank" rel="noopener noreferrer">Abrir archivo</a>
+                            </div>
+                        </div>
+                    {% endif %}
+
+    <div class="post-meta">0 me gusta · 0 comentarios</div>
+</article>
             {% empty %}
-                <div class="post-card" style="margin-top: 1rem;">
-                    <p>No hay publicaciones todavía. Crea tu primer post académico.</p>
+                <div class="post-card">
+                    <p>Aún no hay publicaciones.</p>
                 </div>
             {% endfor %}
         </div>
@@ -117,25 +130,44 @@
             <h3>Crear publicación</h3>
             <button id="closePostModal" class="post-modal-close" type="button">&times;</button>
         </div>
-
-        <form method="post" class="post-modal-form">
+        <form method="post" enctype="multipart/form-data" class="post-modal-form">
             {% csrf_token %}
+            <input type="hidden" name="create_post" value="1">
 
             <div class="post-modal-user">
                 Publicando como <strong>{{ request.user.username }}</strong>
             </div>
 
-            {{ post_form.content }}
-
-            {% if post_form.content.errors %}
+            {% if post_form.non_field_errors %}
                 <div class="post-form-error">
-                    {{ post_form.content.errors }}
+                    {{ post_form.non_field_errors }}
                 </div>
             {% endif %}
 
-            <button type="submit" name="create_post" value="1" class="post-submit-btn">
-                Publicar
-            </button>
+            <div class="form-field">
+                {{ post_form.content }}
+                {% if post_form.content.errors %}
+                    <div class="post-form-error">{{ post_form.content.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-field">
+                <label for="{{ post_form.image.id_for_label }}">Agregar imagen</label>
+                {{ post_form.image }}
+                {% if post_form.image.errors %}
+                    <div class="post-form-error">{{ post_form.image.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-field">
+                <label for="{{ post_form.attachment.id_for_label }}">Agregar archivo</label>
+                {{ post_form.attachment }}
+                {% if post_form.attachment.errors %}
+                    <div class="post-form-error">{{ post_form.attachment.errors }}</div>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="post-submit-btn">Publicar</button>
         </form>
     </div>
 

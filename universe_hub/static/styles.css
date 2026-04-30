@@ -4,6 +4,7 @@
 
 :root {
     --bg: #f5f7fb;
+    --bg-top: #eef2ff;
     --surface: #ffffff;
     --surface-soft: #f8fafc;
     --border: #e2e8f0;
@@ -15,19 +16,20 @@
     --secondary: #0f766e;
     --secondary-hover: #115e59;
     --danger: #dc2626;
-    --shadow-sm: 0 4px 12px rgba(15, 23, 42, 0.06);
-    --shadow-md: 0 12px 30px rgba(15, 23, 42, 0.10);
+    --shadow-sm: 0 6px 20px rgba(15, 23, 42, 0.06);
+    --shadow-md: 0 16px 34px rgba(15, 23, 42, 0.10);
     --shadow-lg: 0 24px 60px rgba(15, 23, 42, 0.18);
     --radius-sm: 10px;
     --radius-md: 14px;
-    --radius-lg: 18px;
+    --radius-lg: 20px;
 }
 
-html, body {
+html,
+body {
     margin: 0;
     padding: 0;
     font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background: linear-gradient(180deg, #eef2ff 0%, var(--bg) 220px);
+    background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg) 220px);
     color: var(--text);
 }
 
@@ -44,7 +46,12 @@ a:hover {
     text-decoration: underline;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     margin-top: 0;
 }
 
@@ -59,16 +66,16 @@ p {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.1rem 1.5rem;
+    padding: 1rem 1.5rem;
     background: rgba(255, 255, 255, 0.88);
     backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.95);
 }
 
 .logo {
-    font-size: 1.2rem;
+    font-size: 1.15rem;
     font-weight: 800;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.01em;
     color: var(--primary);
 }
 
@@ -82,12 +89,20 @@ p {
     align-items: start;
 }
 
+.feed h2 {
+    margin-bottom: 1rem;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text);
+}
+
 .post-card {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
+    border-radius: 22px;
     padding: 1rem 1.1rem;
     box-shadow: var(--shadow-sm);
+    margin-bottom: 1rem;
 }
 
 .user-info {
@@ -97,11 +112,6 @@ p {
 
 .post-card h3 {
     margin-bottom: 0.75rem;
-}
-
-.post-card h2,
-.feed h2 {
-    margin-bottom: 1rem;
 }
 
 .post-card p:last-child {
@@ -148,6 +158,10 @@ p {
     z-index: 1001;
 }
 
+.hidden {
+    display: none;
+}
+
 .post-modal {
     position: fixed;
     top: 50%;
@@ -157,7 +171,7 @@ p {
     overflow-y: auto;
     transform: translate(-50%, -50%);
     background: var(--surface);
-    border: 1px solid rgba(226, 232, 240, 0.9);
+    border: 1px solid rgba(226, 232, 240, 0.95);
     border-radius: 22px;
     box-shadow: var(--shadow-lg);
     z-index: 1002;
@@ -167,10 +181,6 @@ p {
 .project-modal {
     width: min(94vw, 780px);
     padding-bottom: 1rem;
-}
-
-.hidden {
-    display: none;
 }
 
 .post-modal-header {
@@ -217,6 +227,7 @@ p {
     color: var(--muted);
 }
 
+.post-input,
 .post-modal-textarea,
 .project-textarea,
 .project-input,
@@ -236,16 +247,18 @@ p {
     transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
+.post-input,
 .post-modal-textarea,
 .project-textarea {
     resize: vertical;
-    min-height: 140px;
+    min-height: 120px;
 }
 
 .project-textarea {
     min-height: 110px;
 }
 
+.post-input:focus,
 .post-modal-textarea:focus,
 .project-textarea:focus,
 .project-input:focus,
@@ -255,6 +268,15 @@ p {
 .form-field select:focus {
     border-color: var(--primary);
     box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
+}
+
+.post-file-input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    background: #fff;
+    font-size: 0.95rem;
 }
 
 .post-submit-btn {
@@ -356,6 +378,105 @@ input[type="date"] {
     color: var(--text);
 }
 
+.post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 0.55rem;
+}
+
+.post-author {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1.2;
+}
+
+.post-date {
+    font-size: 0.92rem;
+    color: var(--muted);
+    white-space: nowrap;
+}
+
+.post-content {
+    margin: 0.2rem 0 0.85rem 0;
+    font-size: 1rem;
+    color: #1e293b;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.post-image-wrapper {
+    width: 100%;
+    margin-top: 0.7rem;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #e2e8f0;
+}
+
+.post-image {
+    width: 100%;
+    max-height: 360px;
+    object-fit: cover;
+    display: block;
+}
+
+.post-attachment {
+    margin-top: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.8rem 0.9rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    background: #f8fafc;
+}
+
+.post-attachment-badge {
+    min-width: 48px;
+    height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    background: #e0e7ff;
+    color: #4338ca;
+    font-weight: 800;
+    font-size: 0.88rem;
+    flex-shrink: 0;
+}
+
+.post-attachment-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+}
+
+.post-attachment-info strong {
+    font-size: 1rem;
+    color: var(--text);
+    word-break: break-word;
+}
+
+.post-attachment-info a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.post-attachment-info a:hover {
+    text-decoration: underline;
+}
+
+.post-meta {
+    margin-top: 0.9rem;
+    font-size: 0.92rem;
+    color: var(--muted-2);
+}
+
 ::-webkit-scrollbar {
     width: 10px;
 }
@@ -409,5 +530,15 @@ input[type="date"] {
 
     .post-fab-secondary {
         bottom: 84px;
+    }
+
+    .post-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.35rem;
+    }
+
+    .post-attachment {
+        align-items: flex-start;
     }
 }

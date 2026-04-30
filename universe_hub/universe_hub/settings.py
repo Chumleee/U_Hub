@@ -166,6 +166,9 @@ SOCIALACCOUNT_LOGIN_ON_GET = True
 # Indica a dónde ir tras un login exitoso
 LOGIN_REDIRECT_URL = 'home'
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
 # Parche de compatibilidad para MariaDB 10.4 y XAMPP
 from django.db.backends.mysql.features import DatabaseFeatures
 

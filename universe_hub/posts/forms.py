@@ -5,17 +5,40 @@ from .models import Post, Project
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ['content']
+        fields = ['content', 'image', 'attachment']
         labels = {
             'content': 'Contenido del post',
+            'image': 'Agregar imagen',
+            'attachment': 'Agregar archivo',
         }
         widgets = {
             'content': forms.Textarea(attrs={
-                'rows': 6,
-                'placeholder': 'Comparte una idea, avance o solicitud académica...',
-                'class': 'post-modal-textarea',
+                'class': 'post-input',
+                'rows': 4,
+                'placeholder': '¿Qué quieres compartir hoy?'
+            }),
+            'image': forms.ClearableFileInput(attrs={
+                'class': 'post-file-input',
+                'accept': 'image/*'
+            }),
+            'attachment': forms.ClearableFileInput(attrs={
+                'class': 'post-file-input',
+                'accept': '.pdf,.txt,.doc,.docx'
             }),
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        content = cleaned_data.get('content')
+        image = cleaned_data.get('image')
+        attachment = cleaned_data.get('attachment')
+
+        if not content and not image and not attachment:
+            raise forms.ValidationError(
+                'La publicación debe tener texto, una imagen o un archivo.'
+            )
+
+        return cleaned_data
 
 
 CAREER_CHOICES = [

@@ -1,22 +1,54 @@
 from django.db import models
 from django.conf import settings
-
-User = settings.AUTH_USER_MODEL
+from django.core.validators import FileExtensionValidator
 
 
 class Post(models.Model):
     author = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name='posts'
     )
-    content = models.TextField(max_length=1000)
+    content = models.TextField(max_length=1000, blank=True)
+    image = models.ImageField(
+        upload_to='posts/images/',
+        blank=True,
+        null=True,
+        verbose_name='Imagen'
+    )
+    attachment = models.FileField(
+        upload_to='posts/files/',
+        blank=True,
+        null=True,
+        verbose_name='Archivo adjunto',
+        validators=[
+            FileExtensionValidator(
+                allowed_extensions=['pdf', 'txt', 'doc', 'docx']
+            )
+        ]
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    is_project = models.BooleanField(default=False)  # False = post normal, True = project teaser
+    is_project = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['-created_at']
 
     def __str__(self):
         return f"Post #{self.id} by {self.author}"
+
+    @property
+    def attachment_name(self):
+        if self.attachment:
+            return self.attachment.name.split('/')[-1]
+        return ''
+
+    @property
+    def attachment_extension(self):
+        if self.attachment:
+            return self.attachment.name.split('.')[-1].lower()
+        return ''
+
 
 class Project(models.Model):
     STATUS_CHOICES = [
@@ -24,6 +56,7 @@ class Project(models.Model):
         ('in_progress', 'En desarrollo'),
         ('closed', 'Cerrado'),
     ]
+
     PROJECT_TYPES = [
         ('class', 'Proyecto de clase'),
         ('thesis', 'Tesis o Tesina'),
@@ -32,10 +65,10 @@ class Project(models.Model):
     ]
 
     PROJECT_STAGES = [
-        ('idea', '💡 Solo es una idea (Fase 0)'),
-        ('planning', '📝 En planeación / Diseño (Fase 1)'),
-        ('prototype', '🛠️ Prototipo iniciado (Fase 2)'),
-        ('active', '🚀 En desarrollo activo (Fase 3)'),
+        ('idea', 'Solo es una idea (Fase 0)'),
+        ('planning', 'En planeación / Diseño (Fase 1)'),
+        ('prototype', 'Prototipo iniciado (Fase 2)'),
+        ('active', 'En desarrollo activo (Fase 3)'),
     ]
 
     WORK_MODES = [
@@ -45,29 +78,25 @@ class Project(models.Model):
     ]
 
     owner = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name='projects'
     )
     title = models.CharField(max_length=200)
-    problem_and_goal = models.TextField()
+    summary = models.CharField(max_length=300)
+    description = models.TextField()
+    problem_and_goal = models.TextField(blank=True, default='')
     project_type = models.CharField(max_length=20, choices=PROJECT_TYPES)
     stage = models.CharField(max_length=20, choices=PROJECT_STAGES)
     vacancies = models.PositiveIntegerField(default=1)
-    target_careers = models.TextField(blank=True)      # temporal: texto o lista separada por coma
-    required_skills = models.TextField(blank=True)     # temporal: texto separado por coma
-    work_mode = models.CharField(max_length=20, choices=WORK_MODES)
-    application_deadline = models.DateField(null=True, blank=True)
-    incentive = models.CharField(max_length=255, blank=True)
-    status = models.CharField(max_length=20, default='open')
-    created_at = models.DateTimeField(auto_now_add=True)
-    problem_and_goal = models.TextField(blank=True, default='')
-
-    summary = models.CharField(max_length=300)
-    description = models.TextField()
+    target_careers = models.TextField(blank=True)
     required_skills = models.TextField(
         help_text='Lista de habilidades requeridas separadas por comas'
     )
+    work_mode = models.CharField(max_length=20, choices=WORK_MODES)
+    application_deadline = models.DateField(null=True, blank=True)
+    deadline = models.DateField(null=True, blank=True)
+    incentive = models.CharField(max_length=255, blank=True)
     status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
@@ -75,14 +104,14 @@ class Project(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    deadline = models.DateField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.title} ({self.get_status_display()})"
 
+
 class Comment(models.Model):
     author = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name='comments'
     )
@@ -104,7 +133,6 @@ class Comment(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def clean(self):
-        # Garantizar que al menos uno de post o project esté definido
         from django.core.exceptions import ValidationError
         if not self.post and not self.project:
             raise ValidationError('El comentario debe pertenecer a un post o a un proyecto.')
@@ -113,9 +141,10 @@ class Comment(models.Model):
         target = self.post or self.project
         return f"Comment by {self.author} on {target}"
 
+
 class Like(models.Model):
     user = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name='likes'
     )
@@ -128,7 +157,7 @@ class Like(models.Model):
 
     class Meta:
         unique_together = ('user', 'post')
+        ordering = ['-created_at']
 
     def __str__(self):
         return f"{self.user} ♥ Post #{self.post_id}"
-
