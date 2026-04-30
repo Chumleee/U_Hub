@@ -24,6 +24,25 @@ class Project(models.Model):
         ('in_progress', 'En desarrollo'),
         ('closed', 'Cerrado'),
     ]
+    PROJECT_TYPES = [
+        ('class', 'Proyecto de clase'),
+        ('thesis', 'Tesis o Tesina'),
+        ('hackathon', 'Concurso o Hackathon'),
+        ('startup', 'Emprendimiento propio'),
+    ]
+
+    PROJECT_STAGES = [
+        ('idea', '💡 Solo es una idea (Fase 0)'),
+        ('planning', '📝 En planeación / Diseño (Fase 1)'),
+        ('prototype', '🛠️ Prototipo iniciado (Fase 2)'),
+        ('active', '🚀 En desarrollo activo (Fase 3)'),
+    ]
+
+    WORK_MODES = [
+        ('remote', '100% Remoto'),
+        ('onsite', 'Presencial (En campus)'),
+        ('hybrid', 'Híbrido'),
+    ]
 
     owner = models.ForeignKey(
         User,
@@ -31,6 +50,19 @@ class Project(models.Model):
         related_name='projects'
     )
     title = models.CharField(max_length=200)
+    problem_and_goal = models.TextField()
+    project_type = models.CharField(max_length=20, choices=PROJECT_TYPES)
+    stage = models.CharField(max_length=20, choices=PROJECT_STAGES)
+    vacancies = models.PositiveIntegerField(default=1)
+    target_careers = models.TextField(blank=True)      # temporal: texto o lista separada por coma
+    required_skills = models.TextField(blank=True)     # temporal: texto separado por coma
+    work_mode = models.CharField(max_length=20, choices=WORK_MODES)
+    application_deadline = models.DateField(null=True, blank=True)
+    incentive = models.CharField(max_length=255, blank=True)
+    status = models.CharField(max_length=20, default='open')
+    created_at = models.DateTimeField(auto_now_add=True)
+    problem_and_goal = models.TextField(blank=True, default='')
+
     summary = models.CharField(max_length=300)
     description = models.TextField()
     required_skills = models.TextField(

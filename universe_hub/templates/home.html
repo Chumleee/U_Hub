@@ -1,154 +1,12 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Universe Hub - Feed Principal</title>
-    <style>
-        :root {
-            --indigo-electric: #4f46e5;
-            --white: #ffffff;
-            --gray-light: #f3f4f6;
-            --gray-slate: #64748b;
-        }
-        body { 
-            font-family: system-ui, sans-serif;
-            background: var(--gray-light);
-            margin: 0; padding: 0;
-            color: var(--gray-slate);
-        }
-        .header {
-            background: var(--white);
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .logo { color: var(--indigo-electric); font-size: 1.5rem; font-weight: bold; }
-        .feed {
-            max-width: 1200px; margin: 2rem auto;
-            display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 2rem; padding: 0 2rem;
-        }
-        .post-card {
-            background: var(--white);
-            padding: 1.5rem; border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        }
-        .user-info { font-weight: 500; color: var(--indigo-electric); }
-            .post-fab {
-            position: fixed;
-            right: 24px;
-            bottom: 24px;
-            width: 64px;
-            height: 64px;
-            border: none;
-            border-radius: 50%;
-            background: #4f46e5;
-            color: #ffffff;
-            font-size: 2rem;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.35);
-            z-index: 1000;
-            transition: transform 0.2s ease, background 0.2s ease;
-        }
-
-        .post-fab:hover {
-            background: #3730a3;
-            transform: scale(1.05);
-        }
-
-        .post-modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(15, 23, 42, 0.45);
-            z-index: 1001;
-        }
-
-        .post-modal {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            width: 90%;
-            max-width: 520px;
-            background: #ffffff;
-            border-radius: 18px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.20);
-            transform: translate(-50%, -50%);
-            z-index: 1002;
-            padding: 1.5rem;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .post-modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .post-modal-header h3 {
-            margin: 0;
-            color: #334155;
-        }
-
-        .post-modal-close {
-            background: none;
-            border: none;
-            font-size: 1.8rem;
-            color: #64748b;
-            cursor: pointer;
-        }
-
-        .post-modal-user {
-            margin-bottom: 0.75rem;
-            color: #64748b;
-            font-size: 0.95rem;
-        }
-
-        .post-modal-textarea {
-            width: 100%;
-            min-height: 180px;
-            border: 1px solid #dbe3ea;
-            border-radius: 12px;
-            padding: 1rem;
-            resize: vertical;
-            font-size: 1rem;
-            outline: none;
-            box-sizing: border-box;
-        }
-
-        .post-modal-textarea:focus {
-            border-color: #4f46e5;
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
-        }
-
-        .post-submit-btn {
-            margin-top: 1rem;
-            width: 100%;
-            border: none;
-            border-radius: 12px;
-            background: #4f46e5;
-            color: white;
-            padding: 0.9rem 1rem;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .post-submit-btn:hover {
-            background: #3730a3;
-        }
-
-        .post-form-error {
-            margin-top: 0.5rem;
-            color: #b91c1c;
-            font-size: 0.9rem;
-        }
-            
-    </style>
+    <link rel="icon" type="image/x-icon" href="{% static 'img/logo.png' %}">
+    <link rel="stylesheet" href="{% static 'styles.css' %}?v=2">
 </head>
 <body>
     <div class="header">
@@ -161,70 +19,96 @@
             {% endif %}
         </div>
     </div>
-    
+
     <div class="feed">
-    <!-- Columna izquierda: info del usuario -->
-    <div>
-        <div class="post-card">
-            <h3>Tu perfil académico</h3>
-            <p><strong>{{ user.username }}</strong></p>
-            <p>{{ user.university }}</p>
-            <p>{{ user.major }} - Semestre {{ user.semester }}</p>
-            <p style="margin-top: 0.5rem;">{{ user.bio }}</p>
+        <!-- Columna izquierda: perfil -->
+        <div>
+            <div class="post-card">
+                <h3>Tu perfil académico</h3>
+                <p><strong>{{ user.username }}</strong></p>
+                <p>{{ user.university }}</p>
+                <p>{{ user.major }} - Semestre {{ user.semester }}</p>
+                <p style="margin-top: 0.5rem;">{{ user.bio }}</p>
+            </div>
         </div>
-    </div>
 
-    <!-- Columna central: feed de posts -->
-    <div>
-        <h2>Feed de Universe Hub</h2>
+        <!-- Columna central: feed de posts -->
+        <div>
+            <h2>Feed de Universe Hub</h2>
 
-        {% for post in posts %}
-            <div class="post-card" style="margin-top: 1rem;">
-                <div class="user-info">
-                    {{ post.author.username }} · {{ post.author.major }} · Sem {{ post.author.semester }}
-                </div>
-                <div style="font-size: 0.85rem; color: #9ca3af; margin-top: 0.25rem;">
-                    {{ post.created_at|date:"d/m/Y H:i" }}
-                </div>
-                <p style="margin-top: 0.75rem;">{{ post.content }}</p>
+            {% for post in posts %}
+                <div class="post-card" style="margin-top: 1rem;">
+                    <div class="user-info">
+                        {{ post.author.username }} · {{ post.author.major }} · Sem {{ post.author.semester }}
+                    </div>
 
-                <div style="margin-top: 0.75rem; font-size: 0.85rem; color: #6b7280;">
-                    {{ post.likes.count }} me gusta · {{ post.comments.count }} comentarios
-                </div>
-            </div>
-        {% empty %}
-            <div class="post-card" style="margin-top: 1rem;">
-                <p>No hay publicaciones todavía. Crea tu primer post académico.</p>
-            </div>
-        {% endfor %}
-    </div>
+                    <div style="font-size: 0.85rem; color: #9ca3af; margin-top: 0.25rem;">
+                        {{ post.created_at|date:"d/m/Y H:i" }}
+                    </div>
 
-    <!-- Columna derecha: proyectos abiertos -->
-    <div>
-        <div class="post-card">
-            <h3>Proyectos abiertos</h3>
-            {% for project in projects %}
-                <div style="margin-top: 0.75rem;">
-                    <strong>{{ project.title }}</strong><br>
-                    <span style="font-size: 0.85rem; color: #6b7280;">
-                        {{ project.owner.username }} · {{ project.owner.major }}
-                    </span>
-                    <p style="margin: 0.25rem 0 0.5rem 0;">{{ project.summary }}</p>
-                    <span style="font-size: 0.8rem; color: #9ca3af;">
-                        Skills: {{ project.required_skills }}
-                    </span>
+                    <p style="margin-top: 0.75rem;">{{ post.content }}</p>
+
+                    <div style="margin-top: 0.75rem; font-size: 0.85rem; color: #6b7280;">
+                        {{ post.likes.count }} me gusta · {{ post.comments.count }} comentarios
+                    </div>
                 </div>
             {% empty %}
-                <p>No hay proyectos abiertos aún.</p>
+                <div class="post-card" style="margin-top: 1rem;">
+                    <p>No hay publicaciones todavía. Crea tu primer post académico.</p>
+                </div>
             {% endfor %}
         </div>
-    </div>
+
+        <!-- Columna derecha: proyectos abiertos -->
+        <div>
+            <div class="post-card">
+                <h3>Proyectos abiertos</h3>
+
+                {% for project in projects %}
+                    <div style="margin-top: 1rem; padding-bottom: 0.9rem; border-bottom: 1px solid #e5e7eb;">
+                        <strong>{{ project.title }}</strong><br>
+
+                        <span style="font-size: 0.85rem; color: #6b7280;">
+                            {{ project.owner.username }} · {{ project.owner.major }}
+                        </span>
+
+                        <p style="margin: 0.35rem 0 0.5rem 0;">
+                            {{ project.problem_and_goal|truncatechars:120 }}
+                        </p>
+
+                        <div style="font-size: 0.8rem; color: #9ca3af;">
+                            {{ project.get_project_type_display }} · {{ project.get_stage_display }}
+                        </div>
+
+                        <div style="font-size: 0.8rem; color: #9ca3af; margin-top: 0.2rem;">
+                            {{ project.vacancies }} vacante{{ project.vacancies|pluralize }}
+                        </div>
+
+                        <div style="font-size: 0.8rem; color: #9ca3af; margin-top: 0.2rem;">
+                            Modalidad: {{ project.get_work_mode_display }}
+                        </div>
+
+                        <div style="font-size: 0.8rem; color: #9ca3af; margin-top: 0.2rem;">
+                            Skills: {{ project.required_skills }}
+                        </div>
+
+                        {% if project.application_deadline %}
+                            <div style="font-size: 0.8rem; color: #9ca3af; margin-top: 0.2rem;">
+                                Fecha límite: {{ project.application_deadline|date:"d/m/Y" }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% empty %}
+                    <p>No hay proyectos abiertos aún.</p>
+                {% endfor %}
+            </div>
+        </div>
     </div>
 
-    <!-- Botón flotante -->
+    <!-- Botón flotante para post -->
     <button id="openPostModal" class="post-fab" type="button">+</button>
 
-    <!-- Fondo oscuro -->
+    <!-- Overlay post -->
     <div id="postModalOverlay" class="post-modal-overlay hidden"></div>
 
     <!-- Modal para crear post -->
@@ -249,38 +133,135 @@
                 </div>
             {% endif %}
 
-            <button type="submit" class="post-submit-btn">Publicar</button>
+            <button type="submit" name="create_post" value="1" class="post-submit-btn">
+                Publicar
+            </button>
         </form>
     </div>
 
+    <!-- Botón para abrir modal de proyecto -->
+    <button id="openProjectModal" class="post-fab post-fab-secondary" type="button">
+        ✦
+    </button>
+
+    <!-- Overlay proyecto -->
+    <div id="projectModalOverlay" class="post-modal-overlay hidden"></div>
+
+    <!-- Modal Proyecto -->
+    <div id="projectModal" class="post-modal project-modal hidden">
+        <div class="post-modal-header">
+            <h3>Publicar proyecto</h3>
+            <button id="closeProjectModal" class="post-modal-close" type="button">&times;</button>
+        </div>
+
+        <form method="post" class="post-modal-form">
+            {% csrf_token %}
+            <input type="hidden" name="create_project" value="1">
+
+            <section class="project-section">
+                <h4 class="project-section-title">1. ¿De qué trata el proyecto?</h4>
+
+                <div class="form-field">
+                    {{ project_form.title.label_tag }}
+                    {{ project_form.title }}
+                    {% if project_form.title.errors %}
+                        <div class="post-form-error">{{ project_form.title.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-field">
+                    {{ project_form.problem_and_goal.label_tag }}
+                    {{ project_form.problem_and_goal }}
+                    {% if project_form.problem_and_goal.errors %}
+                        <div class="post-form-error">{{ project_form.problem_and_goal.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-field">
+                    {{ project_form.project_type.label_tag }}
+                    {{ project_form.project_type }}
+                    {% if project_form.project_type.errors %}
+                        <div class="post-form-error">{{ project_form.project_type.errors }}</div>
+                    {% endif %}
+                </div>
+            </section>
+
+            <section class="project-section">
+                <h4 class="project-section-title">2. ¿Dónde estamos parados?</h4>
+
+                <div class="form-field">
+                    {{ project_form.stage.label_tag }}
+                    <div class="radio-group">
+                        {{ project_form.stage }}
+                    </div>
+                    {% if project_form.stage.errors %}
+                        <div class="post-form-error">{{ project_form.stage.errors }}</div>
+                    {% endif %}
+                </div>
+            </section>
+
+            <section class="project-section">
+                <h4 class="project-section-title">3. ¿A quién necesito?</h4>
+
+                <div class="form-field">
+                    {{ project_form.vacancies.label_tag }}
+                    {{ project_form.vacancies }}
+                    {% if project_form.vacancies.errors %}
+                        <div class="post-form-error">{{ project_form.vacancies.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-field">
+                    {{ project_form.target_careers.label_tag }}
+                    <div class="checkbox-group">
+                        {{ project_form.target_careers }}
+                    </div>
+                    {% if project_form.target_careers.errors %}
+                        <div class="post-form-error">{{ project_form.target_careers.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-field">
+                    {{ project_form.required_skills.label_tag }}
+                    {{ project_form.required_skills }}
+                    {% if project_form.required_skills.errors %}
+                        <div class="post-form-error">{{ project_form.required_skills.errors }}</div>
+                    {% endif %}
+                </div>
+            </section>
+
+            <section class="project-section">
+                <h4 class="project-section-title">4. Logística</h4>
+
+                <div class="form-field">
+                    {{ project_form.work_mode.label_tag }}
+                    {{ project_form.work_mode }}
+                    {% if project_form.work_mode.errors %}
+                        <div class="post-form-error">{{ project_form.work_mode.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-field">
+                    {{ project_form.application_deadline.label_tag }}
+                    {{ project_form.application_deadline }}
+                    {% if project_form.application_deadline.errors %}
+                        <div class="post-form-error">{{ project_form.application_deadline.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-field">
+                    {{ project_form.incentive.label_tag }}
+                    {{ project_form.incentive }}
+                    {% if project_form.incentive.errors %}
+                        <div class="post-form-error">{{ project_form.incentive.errors }}</div>
+                    {% endif %}
+                </div>
+            </section>
+
+            <button type="submit" class="post-submit-btn">Publicar proyecto</button>
+        </form>
+    </div>
+
+    <script src="{% static 'script.js' %}"></script>
 </body>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const openBtn = document.getElementById('openPostModal');
-        const closeBtn = document.getElementById('closePostModal');
-        const modal = document.getElementById('postModal');
-        const overlay = document.getElementById('postModalOverlay');
-
-        function openModal() {
-            modal.classList.remove('hidden');
-            overlay.classList.remove('hidden');
-        }
-
-        function closeModal() {
-            modal.classList.add('hidden');
-            overlay.classList.add('hidden');
-        }
-
-        if (openBtn) openBtn.addEventListener('click', openModal);
-        if (closeBtn) closeBtn.addEventListener('click', closeModal);
-        if (overlay) overlay.addEventListener('click', closeModal);
-
-        document.addEventListener('keydown', function (event) {
-            if (event.key === 'Escape') {
-                closeModal();
-            }
-        });
-    });
-</script>
-
 </html>
