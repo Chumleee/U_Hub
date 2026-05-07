@@ -47,13 +47,15 @@
 </head>
 <body>
     <div class="login-container">
-        <div class="login-form">
-            <h1 style="color: var(--gray-slate); margin-bottom: 2rem; font-size: 1.8rem;">Bienvenido de vuelta</h1>
-            
-            <form method="post">
+    <div class="login-form">
+        <h1 style="color: var(--gray-slate); margin-bottom: 2rem; font-size: 1.8rem;">Bienvenido de vuelta</h1>
+    
+        <form method="post" action="{% url 'account_login' %}">
             {% csrf_token %}
-            <input type="text" name="username" placeholder="Usuario" required>
+    
+            <input type="text" name="login" placeholder="Usuario" required>
             <input type="password" name="password" placeholder="Contraseña" required>
+    
             <button type="submit">Iniciar Sesión</button>
             
             <div style="text-align: center; margin: 1.5rem 0; color: #94a3b8; font-size: 0.9rem; position: relative;">

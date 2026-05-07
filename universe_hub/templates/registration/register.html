@@ -29,7 +29,7 @@
 <body>
     <div class="container">
         <div class="logo">Universe Hub</div>
-            <form method="post">
+            <form method="post" action="{% url 'register' %}">
             {% csrf_token %}
             
             {% if form.non_field_errors %}
@@ -86,14 +86,13 @@
             </div>
             {% endif %}
         </div>
-            
-            <button type="submit">Crear cuenta</button>
-            </form>
-
+        
+        <button type="submit">Crear cuenta</button>
+        </form>
+        
         <p style="text-align: center; margin-top: 1rem;">
-            ¿Ya tienes cuenta? <a href="{% url 'login' %}" style="color: var(--indigo-electric);">Inicia sesión</a>
-        </p>
-    </div>
+            ¿Ya tienes cuenta? <a href="{% url 'account_login' %}" style="color: var(--indigo-electric);">Inicia sesión</a>
+            </div>
 
     <!--barra de seguridad dinamica-->
     <script>
