@@ -132,11 +132,6 @@ class Comment(models.Model):
     content = models.TextField(max_length=500)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def clean(self):
-        from django.core.exceptions import ValidationError
-        if not self.post and not self.project:
-            raise ValidationError('El comentario debe pertenecer a un post o a un proyecto.')
-
     def __str__(self):
         target = self.post or self.project
         return f"Comment by {self.author} on {target}"

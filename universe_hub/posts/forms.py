@@ -1,5 +1,5 @@
 from django import forms
-from .models import Post, Project
+from .models import Post, Project, Comment
 
 
 class PostForm(forms.ModelForm):
@@ -69,7 +69,6 @@ class ProjectForm(forms.ModelForm):
             'class': 'project-textarea',
         })
     )
-
     class Meta:
         model = Project
         fields = [
@@ -151,3 +150,23 @@ class ProjectForm(forms.ModelForm):
             instance.save()
 
         return instance
+    
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['content']
+        labels = {
+            'content': '',
+        }
+        widgets = {
+            'content': forms.Textarea(attrs={
+                'rows': 2,
+                'placeholder': 'Escribe un comentario...',
+                'class': 'comment-input',
+            }),
+        }
+    def clean_content(self):
+        content = self.cleaned_data.get('content', '').strip()
+        if not content:
+            raise forms.ValidationError('El comentario no puede estar vacío.')
+        return content

@@ -80,4 +80,108 @@ document.addEventListener('DOMContentLoaded', function () {
             closeModal(projectModal, projectOverlay);
         }
     });
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                cookie = cookie.trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    const csrfToken = getCookie('csrftoken');
+
+    document.querySelectorAll('.like-form').forEach(function (form) {
+        form.addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            const postCard = form.closest('.post-card');
+            const likeBtnText = postCard.querySelector('.like-btn-text');
+            const likesCount = postCard.querySelector('.likes-count');
+
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrfToken,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    credentials: 'same-origin'
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    likeBtnText.textContent = data.liked ? '❤️ Me gusta' : '🤍 Me gusta';
+                    likesCount.textContent = `${data.likes_count} me gusta${data.likes_count === 1 ? '' : 's'}`;
+                }
+            } catch (error) {
+                console.error('Error al procesar like:', error);
+            }
+        });
+    });
+
+    document.querySelectorAll('.comment-form').forEach(function (form) {
+        form.addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            const postCard = form.closest('.post-card');
+            const textarea = form.querySelector('.comment-input');
+            const commentsList = postCard.querySelector('.comments-list');
+            const commentsCount = postCard.querySelector('.comments-count');
+            const commentEmpty = commentsList.querySelector('.comment-empty');
+
+            const content = textarea.value.trim();
+            if (!content) return;
+
+            const formData = new FormData();
+            formData.append('content', content);
+
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrfToken,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: formData,
+                    credentials: 'same-origin'
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    if (commentEmpty) {
+                        commentEmpty.remove();
+                    }
+
+                    const commentItem = document.createElement('div');
+                    commentItem.classList.add('comment-item');
+                    commentItem.innerHTML = `
+                        <div class="comment-author">${data.comment.author}</div>
+                        <div class="comment-text"></div>
+                        <div class="comment-date">${data.comment.created_at}</div>
+                    `;
+
+                    commentItem.querySelector('.comment-text').textContent = data.comment.content;
+                    commentsList.appendChild(commentItem);
+
+                    commentsCount.textContent = `${data.comments_count} comentario${data.comments_count === 1 ? '' : 's'}`;
+                    textarea.value = '';
+                } else {
+                    console.error('Errores del comentario:', data.errors);
+                    alert('No se pudo guardar el comentario.');
+                }
+            } catch (error) {
+                console.error('Error al enviar comentario:', error);
+            }
+        });
+    });
 });
