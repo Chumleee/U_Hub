@@ -190,3 +190,9 @@ BaseDatabaseWrapper.check_database_version_supported = lambda self: None
 # 2. Desactivar explícitamente el soporte de RETURNING en las características de MySQL
 DatabaseFeatures.can_return_columns_from_insert = False
 DatabaseFeatures.can_return_rows_from_bulk_insert = False
+
+CSRF_USE_SESSIONS = True
+# Asegura que la cookie se refresque correctamente
+CSRF_COOKIE_HTTPONLY = False  
+# Ayuda a que el navegador maneje mejor el token en entornos de desarrollo
+CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1', 'http://localhost']
