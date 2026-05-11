@@ -17,6 +17,10 @@ def register(request):
             user = form.save()
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             return redirect('home')
+<<<<<<< HEAD
+=======
+    
+>>>>>>> main
     else:
         form = StudentUserCreationForm()
 
