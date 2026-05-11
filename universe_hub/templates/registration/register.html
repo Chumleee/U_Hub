@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registro - Universe Hub</title>
+    <style>
+        :root {
+            --indigo-electric: #4f46e5;
+            --white: #ffffff;
+            --gray-light: #f3f4f6;
+            --gray-slate: #64748b;
+        }
+        body { 
+            font-family: system-ui, -apple-system, sans-serif;
+            background: var(--gray-light);
+            margin: 0; padding: 2rem;
+            color: var(--gray-slate);
+        }
+        .container {
+            max-width: 400px; margin: 0 auto;
+            background: var(--white); padding: 2rem;
+            border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .logo { color: var(--indigo-electric); font-size: 1.8rem; font-weight: bold; text-align: center; margin-bottom: 2rem; }
+        input { width: 100%; padding: 0.75rem; margin: 0.5rem 0; border: 1px solid #e5e7eb; border-radius: 8px; box-sizing: border-box; }
+        button { width: 100%; padding: 0.75rem; background: var(--indigo-electric); color: white; border: none; border-radius: 8px; font-size: 1rem; cursor: pointer; }
+        button:hover { background: #3730a3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">Universe Hub</div>
+            <form method="post" action="{% url 'register' %}">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+            <div
+                style="background-color: #fee2e2; color: #b91c1c; padding: 0.75rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.875rem;">
+                {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+            
+            <div>
+                {{ form.username.label_tag }}
+                {{ form.username }}
+                {% if form.username.errors %}
+                <small style="color: #ef4444;">{{ form.username.errors.0 }}</small>
+                {% endif %}
+            </div>
+            
+            <div>
+                {{ form.email.label_tag }}
+                {{ form.email }}
+                {% if form.email.errors %}
+                <small style="color: #ef4444;">{{ form.email.errors.0 }}</small>
+                {% endif %}
+            </div>
+            
+            <div>{{ form.university.label_tag }}{{ form.university }}</div>
+            <div>{{ form.major.label_tag }}{{ form.major }}</div>
+            <div>{{ form.semester.label_tag }}{{ form.semester }}</div>
+            <div>{{ form.bio.label_tag }}{{ form.bio }}</div>
+            
+            <div>
+                {{ form.password1.label_tag }}
+                {{ form.password1 }}
+                {% if form.password1.errors %}
+                <div style="color: #ef4444; font-size: 0.8rem;">
+                    {{ form.password1.errors }}
+                </div>
+                {% endif %}
+            
+                <div id="password-strength-wrapper" style="margin-top: 5px; display: none;">
+                    <div style="background: #e5e7eb; height: 5px; width: 100%; border-radius: 3px;">
+                        <div id="strength-bar" style="height: 100%; width: 0%; border-radius: 3px; transition: all 0.3s;"></div>
+                    </div>
+                    <small id="strength-text" style="font-size: 0.7rem;"></small>
+                </div>
+            </div>
+            
+        <div>
+            {{ form.password2.label_tag }}
+            {{ form.password2 }}
+            {% if form.password2.errors %}
+            <div style="color: #ef4444; font-size: 0.8rem;">
+                {{ form.password2.errors }}
+            </div>
+            {% endif %}
+        </div>
+        
+        <button type="submit">Crear cuenta</button>
+        </form>
+        
+        <p style="text-align: center; margin-top: 1rem;">
+            ¿Ya tienes cuenta? <a href="{% url 'account_login' %}" style="color: var(--indigo-electric);">Inicia sesión</a>
+            </div>
+
+    <!--barra de seguridad dinamica-->
+    <script>
+    const passwordInput = document.querySelector('input[name="password1"]');
+    const strengthBar = document.getElementById('strength-bar');
+    const strengthText = document.getElementById('strength-text');
+    const wrapper = document.getElementById('password-strength-wrapper');
+
+    passwordInput.addEventListener('input', () => {
+        const val = passwordInput.value;
+        if (val.length > 0) {
+            wrapper.style.display = 'block';
+        } else {
+            wrapper.style.display = 'none';
+        }
+
+        let score = 0;
+        if (val.length >= 8) score++;
+        if (/[A-Z]/.test(val)) score++;
+        if (/[0-9]/.test(val)) score++;
+        if (/[^A-Za-z0-9]/.test(val)) score++;
+
+        // Configuración de colores y textos
+        switch (score) {
+            case 0:
+            case 1:
+                strengthBar.style.width = '33%';
+                strengthBar.style.backgroundColor = '#ef4444'; // Rojo
+                strengthText.innerText = 'Seguridad: Débil';
+                break;
+            case 2:
+            case 3:
+                strengthBar.style.width = '66%';
+                strengthBar.style.backgroundColor = '#f59e0b'; // Amarillo
+                strengthText.innerText = 'Seguridad: Media';
+                break;
+            case 4:
+                strengthBar.style.width = '100%';
+                strengthBar.style.backgroundColor = '#10b981'; // Verde
+                strengthText.innerText = 'Seguridad: Fuerte';
+                break;
+        }
+    });
+</script>
+</body>
+</html>

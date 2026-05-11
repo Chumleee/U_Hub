@@ -81,23 +81,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let cookie of cookies) {
-                cookie = cookie.trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-
-    const csrfToken = getCookie('csrftoken');
-
     document.querySelectorAll('.like-form').forEach(function (form) {
         form.addEventListener('submit', async function (event) {
             event.preventDefault();
@@ -105,6 +88,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const postCard = form.closest('.post-card');
             const likeBtnText = postCard.querySelector('.like-btn-text');
             const likesCount = postCard.querySelector('.likes-count');
+            const csrfToken = form.querySelector('[name=csrfmiddlewaretoken]').value;
 
             try {
                 const response = await fetch(form.action, {
@@ -121,6 +105,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (data.success) {
                     likeBtnText.textContent = data.liked ? '❤️ Me gusta' : '🤍 Me gusta';
                     likesCount.textContent = `${data.likes_count} me gusta${data.likes_count === 1 ? '' : 's'}`;
+                } else {
+                    console.error('Error en respuesta de like:', data);
                 }
             } catch (error) {
                 console.error('Error al procesar like:', error);
@@ -137,6 +123,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const commentsList = postCard.querySelector('.comments-list');
             const commentsCount = postCard.querySelector('.comments-count');
             const commentEmpty = commentsList.querySelector('.comment-empty');
+            const csrfToken = form.querySelector('[name=csrfmiddlewaretoken]').value;
 
             const content = textarea.value.trim();
             if (!content) return;
