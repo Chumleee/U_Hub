@@ -2,6 +2,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Iniciar Sesión - Universe Hub</title>
     <link rel="icon" type="image/x-icon" href="{% static 'img/logo.png' %}">
@@ -12,58 +13,140 @@
             --gray-light: #f3f4f6;
             --gray-slate: #64748b;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
             font-family: system-ui, sans-serif;
             background: linear-gradient(135deg, var(--gray-light) 0%, #e0e7ff 100%);
-            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .login-container {
-            display: grid; grid-template-columns: 1fr 1fr; 
-            width: 900px; height: 500px; background: var(--white); 
-            border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+
+       .login-container {
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    width: 900px; 
+    /* Cambia height por min-height */
+    min-height: 500px; 
+    background: var(--white); 
+    border-radius: 20px; 
+    overflow: hidden; 
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+        .login-form {
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
-        .login-form { padding: 3rem; display: flex; flex-direction: column; justify-content: center; }
-        .hero { 
-            background: linear-gradient(135deg, var(--indigo-electric), #7c3aed); 
-            padding: 3rem; color: white; 
+
+        .hero {
+            background: linear-gradient(135deg, var(--indigo-electric), #7c3aed);
+            padding: 3rem;
+            color: white;
         }
-        .logo { font-size: 2.2rem; font-weight: 800; margin-bottom: 1rem; }
-        .tagline { font-size: 1.1rem; opacity: 0.95; line-height: 1.6; }
-        input { 
-            width: 100%; padding: 1rem; margin: 0.75rem 0; 
-            border: 2px solid #e5e7eb; border-radius: 12px; 
-            font-size: 1rem; transition: border-color 0.2s;
+
+        .logo {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
         }
-        input:focus { outline: none; border-color: var(--indigo-electric); }
-        button { 
-            width: 100%; padding: 1rem; background: var(--indigo-electric); 
-            color: white; border: none; border-radius: 12px; 
-            font-size: 1.1rem; font-weight: 600; cursor: pointer; 
+
+        .tagline {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            line-height: 1.6;
+        }
+
+        input {
+            width: 100%;
+            padding: 1rem;
+            margin: 0.75rem 0;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--indigo-electric);
+        }
+
+        button {
+            width: 100%;
+            padding: 1rem;
+            background: var(--indigo-electric);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
             transition: background 0.2s;
         }
-        button:hover { background: #3730a3; }
-        .links { text-align: center; margin-top: 1.5rem; }
-        .links a { color: var(--indigo-electric); text-decoration: none; }
+
+        button:hover {
+            background: #3730a3;
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .links a {
+            color: var(--indigo-electric);
+            text-decoration: none;
+        }
     </style>
 </head>
+
 <body>
     <div class="login-container">
         <div class="login-form">
             <h1 style="color: var(--gray-slate); margin-bottom: 2rem; font-size: 1.8rem;">Bienvenido de vuelta</h1>
-            
-            <form method="post">
-            {% csrf_token %}
-            <input type="text" name="username" placeholder="Usuario" required>
-            <input type="password" name="password" placeholder="Contraseña" required>
-            <button type="submit">Iniciar Sesión</button>
-            
-            <div style="text-align: center; margin: 1.5rem 0; color: #94a3b8; font-size: 0.9rem; position: relative;">
-                <span style="background: white; padding: 0 10px; position: relative; z-index: 1;">O continúa con</span>
-                <div style="position: absolute; top: 50%; left: 0; right: 0; border-top: 1px solid #e2e8f0; z-index: 0;"></div>
-            </div>
-            
-            <a href="{% provider_login_url 'google' %}" style="
+
+            <form method="post" action="{% url 'account_login' %}">
+                {% csrf_token %}
+                {% if form.errors %}
+                <div
+                    style="background-color: #fee2e2; color: #b91c1c; padding: 0.75rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.9rem; border: 1px solid #fecaca;">
+                    {% for field in form %}
+                    {% for error in field.errors %}
+                    <p style="margin: 0;">{{ error }}</p>
+                    {% endfor %}
+                    {% endfor %}
+                
+                    {% for error in form.non_field_errors %}
+                    <p style="margin: 0;">{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <input type="text" name="login" placeholder="Usuario o Correo" required>
+                <input type="password" name="password" placeholder="Contraseña" required>
+
+                <button type="submit">Iniciar Sesión</button>
+
+                <div
+                    style="text-align: center; margin: 1.5rem 0; color: #94a3b8; font-size: 0.9rem; position: relative;">
+                    <span style="background: white; padding: 0 10px; position: relative; z-index: 1;">O continúa
+                        con</span>
+                    <div
+                        style="position: absolute; top: 50%; left: 0; right: 0; border-top: 1px solid #e2e8f0; z-index: 0;">
+                    </div>
+                </div>
+
+                <a href="{% provider_login_url 'google' %}" style="
                     display: flex;
                     align-items: center;
                     justify-content: center;
@@ -78,19 +161,20 @@
                     font-weight: 600;
                     transition: all 0.2s;
                 " onmouseover="this.style.background='#f8fafc'; this.style.borderColor='#cbd5e1'"
-                onmouseout="this.style.background='white'; this.style.borderColor='#e2e8f0'">
-                <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" width="20" height="20" alt="Google">
-                Google
-            </a>
+                    onmouseout="this.style.background='white'; this.style.borderColor='#e2e8f0'">
+                    <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" width="20" height="20"
+                        alt="Google">
+                    Google
+                </a>
             </form>
 
-            
+
 
             <div class="links">
                 <a href="{% url 'register' %}">¿No tienes cuenta? Regístrate</a>
             </div>
         </div>
-        
+
         <div class="hero">
             <div class="logo">Universe Hub</div>
             <p class="tagline">
@@ -101,4 +185,5 @@
         </div>
     </div>
 </body>
+
 </html>

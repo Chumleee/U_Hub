@@ -13,7 +13,16 @@
         <div class="logo">Universe Hub</div>
         <div>
             {% if user.is_authenticated %}
-                Hola, {{ user.username }} | <a href="/accounts/logout/">Salir</a>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span>Hola, <strong>{{ user.username }}</strong></span>
+                    <form method="post" action="{% url 'account_logout' %}">
+                        {% csrf_token %}
+                        <button type="submit"
+                            style="background: none; border: none; color: #ef4444; cursor: pointer; text-decoration: underline; font-family: inherit; font-size: inherit; padding: 0;">
+                            Cerrar sesión
+                        </button>
+                    </form>
+                </div>
             {% else %}
                 <a href="/accounts/login/">Iniciar sesión</a> | <a href="/register/">Registrarse</a>
             {% endif %}

@@ -56,10 +56,15 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
-# Opciones adicionales
-SOCIALACCOUNT_LOGIN_ON_GET = True # Evita una página intermedia de confirmación
+# Configuración de redirecciones
 LOGIN_REDIRECT_URL = 'home'
-ACCOUNT_LOGOUT_REDIRECT_URL = 'login'
+ACCOUNT_LOGOUT_REDIRECT_URL = 'account_login'  # Redirige al login tras salir
+
+# Evita que Allauth pida confirmación para iniciar sesión con Google
+SOCIALACCOUNT_LOGIN_ON_GET = True
+
+# Opcional: Evita confirmación al cerrar sesión (sale directo)
+ACCOUNT_LOGOUT_ON_GET = False
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -136,7 +141,7 @@ AUTH_USER_MODEL = 'users.StudentUser'
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-mx'
 
 TIME_ZONE = 'UTC'
 
@@ -161,13 +166,21 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'  # para producción, más adelante
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Evita que Allauth pida un formulario intermedio
-SOCIALACCOUNT_LOGIN_ON_GET = True
-# Indica a dónde ir tras un login exitoso
-LOGIN_REDIRECT_URL = 'home'
-
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+#obliga al programa a escoger cuenta de google
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'AUTH_PARAMS': {
+            'prompt': 'select_account',
+        },
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+    }
+}
 
 # Parche de compatibilidad para MariaDB 10.4 y XAMPP
 from django.db.backends.mysql.features import DatabaseFeatures
@@ -179,3 +192,9 @@ BaseDatabaseWrapper.check_database_version_supported = lambda self: None
 # 2. Desactivar explícitamente el soporte de RETURNING en las características de MySQL
 DatabaseFeatures.can_return_columns_from_insert = False
 DatabaseFeatures.can_return_rows_from_bulk_insert = False
+
+CSRF_USE_SESSIONS = True
+# Asegura que la cookie se refresque correctamente
+CSRF_COOKIE_HTTPONLY = False  
+# Ayuda a que el navegador maneje mejor el token en entornos de desarrollo
+CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1', 'http://localhost']

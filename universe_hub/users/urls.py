@@ -7,4 +7,5 @@ urlpatterns = [
     path('profile/', views.profile, name='profile'),
     path('posts/<int:post_id>/like/', views.toggle_like, name='toggle_like'),
     path('posts/<int:post_id>/comment/', views.add_comment, name='add_comment'),
+    path('complete-profile/', views.complete_profile, name='complete_profile'),
 ]
