@@ -14,7 +14,7 @@ def register(request):
             user = form.save()  # Guarda el StudentUser en MySQL
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             return redirect('home')
-       
+    
     else:
         form = StudentUserCreationForm()
     return render(request, 'registration/register.html', {'form': form})
