@@ -162,62 +162,70 @@
         margin: 0;
     }
 
-    .project-action-btn {
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        min-width: 260px !important;
-        min-height: 54px !important;
-        padding: 0.95rem 1.25rem !important;
-        border: none !important;
-        border-radius: 14px !important;
-        background: var(--primary) !important;
-        color: #ffffff !important;
-        font-size: 0.97rem !important;
-        font-weight: 800 !important;
-        line-height: 1 !important;
-        cursor: pointer !important;
-        box-shadow: var(--shadow-sm) !important;
-        appearance: none !important;
-        -webkit-appearance: none !important;
-        transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease !important;
+    .apply-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 260px;
+        min-height: 54px;
+        padding: 0.95rem 1.25rem;
+        border: none;
+        border-radius: 14px;
+        background: var(--primary);
+        color: #ffffff;
+        font-size: 0.97rem;
+        font-weight: 800;
+        line-height: 1;
+        cursor: pointer;
+        box-shadow: var(--shadow-sm);
+        appearance: none;
+        -webkit-appearance: none;
+        transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
     }
 
-    .project-action-btn:hover {
-        background: var(--primary-hover) !important;
+    .apply-btn:hover {
+        background: var(--primary-hover);
         transform: translateY(-1px);
     }
 
-    .project-action-btn:focus-visible {
+    .apply-btn:focus-visible {
         outline: 3px solid rgba(79, 70, 229, 0.18);
         outline-offset: 3px;
     }
 
-    .project-action-btn.disabled,
-    .project-action-btn.pending,
-    .project-action-btn.accepted,
-    .project-action-btn.rejected {
-        color: #ffffff !important;
-        cursor: not-allowed !important;
-        box-shadow: none !important;
-        transform: none !important;
-        opacity: 1 !important;
+    .project-status-text {
+        margin: 0;
+        padding: 0.95rem 1rem;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        background: var(--surface-soft);
+        color: var(--text);
+        font-weight: 700;
+        line-height: 1.5;
     }
 
-    .project-action-btn.disabled {
-        background: #94a3b8 !important;
+    .project-status-pending {
+        background: #fff7ed;
+        color: #9a6700;
+        border-color: #fed7aa;
     }
 
-    .project-action-btn.pending {
-        background: #f59e0b !important;
+    .project-status-accepted {
+        background: #ecfdf5;
+        color: #047857;
+        border-color: #a7f3d0;
     }
 
-    .project-action-btn.accepted {
-        background: #10b981 !important;
+    .project-status-rejected {
+        background: #fef2f2;
+        color: #b91c1c;
+        border-color: #fecaca;
     }
 
-    .project-action-btn.rejected {
-        background: #ef4444 !important;
+    .project-status-closed {
+        background: #f1f5f9;
+        color: #475569;
+        border-color: #cbd5e1;
     }
 
     @media (max-width: 768px) {
@@ -238,9 +246,9 @@
             grid-template-columns: 1fr;
         }
 
-        .project-action-btn {
-            width: 100% !important;
-            min-width: 100% !important;
+        .apply-btn {
+            width: 100%;
+            min-width: 100%;
         }
     }
 </style>
@@ -356,29 +364,32 @@
 
         <div class="project-action-box">
             {% if is_owner %}
-                <button class="project-action-btn disabled" disabled>
-                    Este es tu proyecto
-                </button>
+                <p class="project-status-text">Este proyecto te pertenece.</p>
+
+            {% elif project.status != 'open' or project.vacancies <= 0 %}
+                <p class="project-status-text project-status-closed">
+                    Este proyecto ya no está aceptando solicitudes.
+                </p>
+
             {% elif existing_application %}
                 {% if existing_application.status == 'pending' %}
-                    <button class="project-action-btn pending" disabled>
-                        Solicitud enviada
-                    </button>
+                    <p class="project-status-text project-status-pending">
+                        Ya enviaste una solicitud. Está pendiente de revisión.
+                    </p>
                 {% elif existing_application.status == 'accepted' %}
-                    <button class="project-action-btn accepted" disabled>
-                        Ya fuiste aceptado
-                    </button>
+                    <p class="project-status-text project-status-accepted">
+                        Ya formas parte de este proyecto.
+                    </p>
                 {% elif existing_application.status == 'rejected' %}
-                    <button class="project-action-btn rejected" disabled>
-                        Solicitud rechazada
-                    </button>
+                    <p class="project-status-text project-status-rejected">
+                        Tu solicitud fue rechazada.
+                    </p>
                 {% endif %}
+
             {% else %}
                 <form method="post" action="{% url 'apply_to_project' project.id %}">
                     {% csrf_token %}
-                    <button type="submit" class="project-action-btn">
-                        Solicitar ingresar al proyecto
-                    </button>
+                    <button type="submit" class="apply-btn">Solicitar unirme</button>
                 </form>
             {% endif %}
         </div>

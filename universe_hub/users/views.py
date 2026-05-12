@@ -221,12 +221,29 @@ def accept_application(request, application_id):
         messages.info(request, 'Esta solicitud ya fue procesada.')
         return redirect('home')
 
+    project = application.project
+
+    if project.vacancies <= 0:
+        project.status = 'closed'
+        project.save(update_fields=['status'])
+        messages.warning(request, 'Este proyecto ya no tiene vacantes disponibles.')
+        return redirect('home')
+
     application.status = 'accepted'
-    application.save()
+    application.save(update_fields=['status'])
+
+    project.vacancies -= 1
+
+    if project.vacancies <= 0:
+        project.vacancies = 0
+        project.status = 'closed'
+        project.save(update_fields=['vacancies', 'status'])
+    else:
+        project.save(update_fields=['vacancies'])
 
     messages.success(
         request,
-        f'{application.applicant.username} fue aceptado en "{application.project.title}".'
+        f'{application.applicant.username} fue aceptado en "{project.title}".'
     )
     return redirect('home')
 
@@ -250,7 +267,7 @@ def reject_application(request, application_id):
         return redirect('home')
 
     application.status = 'rejected'
-    application.save()
+    application.save(update_fields=['status'])
 
     messages.warning(
         request,

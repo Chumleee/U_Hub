@@ -786,3 +786,57 @@ input[type="date"] {
 ::-webkit-scrollbar-track {
     background: transparent;
 }
+
+.project-action-box {
+    margin-top: 1.25rem;
+}
+
+.apply-btn {
+    border: none;
+    background: var(--primary);
+    color: #fff;
+    padding: 0.85rem 1.1rem;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.apply-btn:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+.project-status-text {
+    margin: 0;
+    padding: 0.9rem 1rem;
+    border-radius: 12px;
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-weight: 600;
+}
+
+.project-status-pending {
+    color: #9a6700;
+    background: #fff7ed;
+    border-color: #fed7aa;
+}
+
+.project-status-accepted {
+    color: #047857;
+    background: #ecfdf5;
+    border-color: #a7f3d0;
+}
+
+.project-status-rejected {
+    color: #b91c1c;
+    background: #fef2f2;
+    border-color: #fecaca;
+}
+
+.project-status-closed {
+    color: #475569;
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+}
