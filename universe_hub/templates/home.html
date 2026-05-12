@@ -11,20 +11,62 @@
 <body>
     <div class="header">
         <div class="logo">Universe Hub</div>
-        <div>
+
+        <div class="header-right">
             {% if user.is_authenticated %}
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <span>Hola, <strong>{{ user.username }}</strong></span>
-                    <form method="post" action="{% url 'account_logout' %}">
-                        {% csrf_token %}
-                        <button type="submit"
-                            style="background: none; border: none; color: #ef4444; cursor: pointer; text-decoration: underline; font-family: inherit; font-size: inherit; padding: 0;">
-                            Cerrar sesión
-                        </button>
-                    </form>
+                <span class="header-user">
+                    Hola, <strong>{{ user.username }}</strong>
+                </span>
+
+                <div class="notification-wrapper">
+                    <button class="notification-btn" id="notificationToggle" type="button">
+                        <span class="bell-icon">🔔</span>
+                        {% if pending_requests_count > 0 %}
+                            <span class="notification-badge">{{ pending_requests_count }}</span>
+                        {% endif %}
+                    </button>
+
+                    <div class="notification-dropdown hidden" id="notificationDropdown">
+                        <div class="notification-dropdown-header">
+                            <h4>Solicitudes pendientes</h4>
+                        </div>
+
+                        {% if pending_requests %}
+                            <div class="notification-list">
+                                {% for application in pending_requests %}
+                                    <div class="notification-item">
+                                        <p>
+                                            <strong>{{ application.applicant.username }}</strong>
+                                            quiere unirse a
+                                            <strong>{{ application.project.title }}</strong>
+                                        </p>
+
+                                        <div class="notification-actions">
+                                            <form method="post" action="{% url 'accept_application' application.id %}">
+                                                {% csrf_token %}
+                                                <button type="submit" class="accept-btn">Aceptar</button>
+                                            </form>
+
+                                            <form method="post" action="{% url 'reject_application' application.id %}">
+                                                {% csrf_token %}
+                                                <button type="submit" class="reject-btn">Rechazar</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="notification-empty">No tienes solicitudes pendientes.</p>
+                        {% endif %}
+                    </div>
                 </div>
-            {% else %}
-                <a href="/accounts/login/">Iniciar sesión</a> | <a href="/register/">Registrarse</a>
+
+                <form method="post" action="{% url 'account_logout' %}" class="logout-form">
+                    {% csrf_token %}
+                    <button type="submit" class="logout-link-btn">
+                        Cerrar sesión
+                    </button>
+                </form>
             {% endif %}
         </div>
     </div>
@@ -117,8 +159,6 @@
                         </form>
                     </div>
                 </article>
-
-</article>
             {% empty %}
                 <div class="post-card">
                     <p>Aún no hay publicaciones.</p>
@@ -133,7 +173,11 @@
 
                 {% for project in projects %}
                     <div style="margin-top: 1rem; padding-bottom: 0.9rem; border-bottom: 1px solid #e5e7eb;">
-                        <strong>{{ project.title }}</strong><br>
+                        <h4 class="project-title">
+                            <a href="{% url 'project_detail' project.id %}">
+                                {{ project.title }}
+                            </a>
+                        </h4>
 
                         <span style="font-size: 0.85rem; color: #6b7280;">
                             {{ project.owner.username }} · {{ project.owner.major }}

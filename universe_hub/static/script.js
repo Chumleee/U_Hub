@@ -171,4 +171,27 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     });
+
+    const notificationToggle = document.getElementById('notificationToggle');
+    const notificationDropdown = document.getElementById('notificationDropdown');
+
+    if (notificationToggle && notificationDropdown) {
+        notificationToggle.addEventListener('click', function (e) {
+            e.stopPropagation();
+            notificationDropdown.classList.toggle('hidden');
+        });
+
+        notificationDropdown.addEventListener('click', function (e) {
+            e.stopPropagation();
+        });
+
+        document.addEventListener('click', function (e) {
+            if (
+                !notificationDropdown.contains(e.target) &&
+                !notificationToggle.contains(e.target)
+            ) {
+                notificationDropdown.classList.add('hidden');
+            }
+        });
+    }
 });

@@ -2,11 +2,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.contrib import messages
 
 from .forms import StudentUserCreationForm
 from .models import StudentUser
 
-from posts.models import Post, Project, Like, Comment
+from posts.models import Post, Project, Like, Comment, ProjectApplication
 from posts.forms import PostForm, ProjectForm, CommentForm
 
 
@@ -67,6 +68,14 @@ def home(request):
         Like.objects.filter(user=request.user).values_list('post_id', flat=True)
     )
 
+    pending_requests = ProjectApplication.objects.select_related(
+        'applicant',
+        'project'
+    ).filter(
+        project__owner=request.user,
+        status='pending'
+    ).order_by('-created_at')
+
     context = {
         'post_form': post_form,
         'project_form': project_form,
@@ -74,6 +83,8 @@ def home(request):
         'posts': posts,
         'projects': projects,
         'liked_post_ids': liked_post_ids,
+        'pending_requests': pending_requests,
+        'pending_requests_count': pending_requests.count(),
     }
 
     return render(request, 'home.html', context)
@@ -144,6 +155,108 @@ def add_comment(request, post_id):
         'errors': form.errors,
     }, status=400)
 
+@login_required
+def project_detail(request, project_id):
+    project = get_object_or_404(Project.objects.select_related('owner'), id=project_id)
+
+    existing_application = ProjectApplication.objects.filter(
+        project=project,
+        applicant=request.user
+    ).first()
+
+    is_owner = project.owner == request.user
+
+    context = {
+        'project': project,
+        'existing_application': existing_application,
+        'is_owner': is_owner,
+    }
+    return render(request, 'projects/project_detail.html', context)
+
+
+@login_required
+def apply_to_project(request, project_id):
+    if request.method != 'POST':
+        return redirect('project_detail', project_id=project_id)
+
+    project = get_object_or_404(Project, id=project_id)
+
+    if project.owner == request.user:
+        messages.warning(request, 'No puedes solicitar entrar a tu propio proyecto.')
+        return redirect('project_detail', project_id=project.id)
+
+    application, created = ProjectApplication.objects.get_or_create(
+        project=project,
+        applicant=request.user,
+        defaults={'status': 'pending'}
+    )
+
+    if created:
+        messages.success(request, 'Tu solicitud fue enviada correctamente.')
+    else:
+        if application.status == 'pending':
+            messages.info(request, 'Ya habías enviado una solicitud a este proyecto.')
+        elif application.status == 'accepted':
+            messages.success(request, 'Ya formas parte de este proyecto.')
+        elif application.status == 'rejected':
+            messages.warning(request, 'Tu solicitud anterior fue rechazada.')
+
+    return redirect('project_detail', project_id=project.id)
+
+@login_required
+def accept_application(request, application_id):
+    if request.method != 'POST':
+        return redirect('home')
+
+    application = get_object_or_404(
+        ProjectApplication.objects.select_related('project', 'applicant'),
+        id=application_id
+    )
+
+    if application.project.owner != request.user:
+        messages.error(request, 'No tienes permiso para aceptar esta solicitud.')
+        return redirect('home')
+
+    if application.status != 'pending':
+        messages.info(request, 'Esta solicitud ya fue procesada.')
+        return redirect('home')
+
+    application.status = 'accepted'
+    application.save()
+
+    messages.success(
+        request,
+        f'{application.applicant.username} fue aceptado en "{application.project.title}".'
+    )
+    return redirect('home')
+
+
+@login_required
+def reject_application(request, application_id):
+    if request.method != 'POST':
+        return redirect('home')
+
+    application = get_object_or_404(
+        ProjectApplication.objects.select_related('project', 'applicant'),
+        id=application_id
+    )
+
+    if application.project.owner != request.user:
+        messages.error(request, 'No tienes permiso para rechazar esta solicitud.')
+        return redirect('home')
+
+    if application.status != 'pending':
+        messages.info(request, 'Esta solicitud ya fue procesada.')
+        return redirect('home')
+
+    application.status = 'rejected'
+    application.save()
+
+    messages.warning(
+        request,
+        f'{application.applicant.username} fue rechazado en "{application.project.title}".'
+    )
+    return redirect('home')
 
 @login_required
 def profile(request):

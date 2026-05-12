@@ -156,3 +156,35 @@ class Like(models.Model):
 
     def __str__(self):
         return f"{self.user} ♥ Post #{self.post_id}"
+    
+class ProjectApplication(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pendiente'),
+        ('accepted', 'Aceptada'),
+        ('rejected', 'Rechazada'),
+    ]
+
+    project = models.ForeignKey(
+        'Project',
+        on_delete=models.CASCADE,
+        related_name='applications'
+    )
+    applicant = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='project_applications'
+    )
+    message = models.TextField(blank=True, null=True)
+    status = models.CharField(
+        max_length=10,
+        choices=STATUS_CHOICES,
+        default='pending'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('project', 'applicant')
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'{self.applicant.username} -> {self.project.title} ({self.status})'
