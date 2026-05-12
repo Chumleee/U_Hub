@@ -1,4 +1,5 @@
 {% load static %}
+{% block body_class %}{% endblock %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -78,146 +79,243 @@
     </div>
 
     <div class="feed">
-        <!-- Columna izquierda: perfil -->
-        <div>
-            <div class="post-card">
-                <h3>Tu perfil académico</h3>
-                <p><strong>{{ user.username }}</strong></p>
-                <p>{{ user.university }}</p>
-                <p>{{ user.major }} - Semestre {{ user.semester }}</p>
-                <p style="margin-top: 0.5rem;">{{ user.bio }}</p>
+        <div class="feed-column">
+        <!-- columna izquierda -->
+            <!-- Columna izquierda: perfil -->
+            <div>
+                <div class="post-card">
+                    <h3>Tu perfil académico</h3>
+                    <p><strong>{{ user.username }}</strong></p>
+                    <p>{{ user.university }}</p>
+                    <p>{{ user.major }} - Semestre {{ user.semester }}</p>
+                    <p style="margin-top: 0.5rem;">{{ user.bio }}</p>
+                </div>
+
+                <details class="sidebar-accordion">
+                    <summary class="sidebar-accordion-summary">
+                        <span>Mis solicitudes</span>
+                        <span class="accordion-count">{{ my_applications|length }}</span>
+                    </summary>
+
+                    <div class="sidebar-accordion-content">
+                        {% for application in my_applications %}
+                            <div class="application-item">
+                                <a href="{% url 'project_detail' application.project.id %}" class="project-link">
+                                    {{ application.project.title }}
+                                </a>
+                                <p class="application-meta">
+                                    {{ application.project.owner.username }} · {{ application.created_at|date:"d/m/Y H:i" }}
+                                </p>
+
+                                {% if application.status == 'pending' %}
+                                    <span class="application-badge pending">Pendiente</span>
+                                {% elif application.status == 'rejected' %}
+                                    <span class="application-badge rejected">Rechazada</span>
+                                {% endif %}
+                            </div>
+                        {% empty %}
+                            <p>No has enviado solicitudes pendientes o rechazadas.</p>
+                        {% endfor %}
+                    </div>
+                </details>
+
+                <details class="sidebar-accordion">
+                    <summary class="sidebar-accordion-summary">
+                        <span>Aceptado</span>
+                        <span class="accordion-count">{{ joined_projects|length }}</span>
+                    </summary>
+
+                    <div class="sidebar-accordion-content">
+                        {% for application in joined_projects %}
+                            <div class="application-item">
+                                <a href="{% url 'project_detail' application.project.id %}" class="project-link">
+                                    {{ application.project.title }}
+                                </a>
+                                <p class="application-meta">
+                                    Líder: {{ application.project.owner.username }}
+                                </p>
+                                <span class="application-badge accepted">Aceptada</span>
+                            </div>
+                        {% empty %}
+                            <p>Aún no formas parte de ningún proyecto.</p>
+                        {% endfor %}
+                    </div>
+                </details>
             </div>
         </div>
-
         <!-- Columna central: feed de posts -->
-        <div>
-            <h2>Feed de Universe Hub</h2>
+        <div class="feed-column">
+        <!-- columna central -->
+            <div>
 
-            {% for post in posts %}
-                <article class="post-card" id="post-{{ post.id }}">
-                    <div class="post-header">
-                        <div class="post-author">{{ post.author.username }}</div>
-                        <div class="post-date">{{ post.created_at|date:"d/m/Y H:i" }}</div>
-                    </div>
-
-                    {% if post.content %}
-                        <p class="post-content">{{ post.content }}</p>
-                    {% endif %}
-
-                    {% if post.image %}
-                        <div class="post-image-wrapper">
-                            <img src="{{ post.image.url }}" alt="Imagen de la publicación" class="post-image">
-                        </div>
-                    {% endif %}
-
-                    {% if post.attachment %}
-                        <div class="post-attachment">
-                            <span class="post-attachment-badge">{{ post.attachment_extension|upper }}</span>
-                            <div class="post-attachment-info">
-                                <strong>{{ post.attachment_name }}</strong>
-                                <a href="{{ post.attachment.url }}" target="_blank" rel="noopener noreferrer">Abrir archivo</a>
-                            </div>
-                        </div>
-                    {% endif %}
-
-                    <div class="post-meta">
-                        <form method="post" action="{% url 'toggle_like' post.id %}" class="like-form">
-                            {% csrf_token %}
-                            <button type="submit" class="like-btn">
-                                <span class="like-btn-text">
-                                    {% if post.id in liked_post_ids %}
-                                        ❤️ Me gusta
-                                    {% else %}
-                                        🤍 Me gusta
-                                    {% endif %}
-                                </span>
-                            </button>
-                        </form>
-
-                        <span class="likes-count">
-                            {{ post.likes.count }} me gusta{{ post.likes.count|pluralize }}
-                        </span>
-
-                        <span>·</span>
-
-                        <span class="comments-count">
-                            {{ post.comments.count }} comentario{{ post.comments.count|pluralize }}
-                        </span>
-                    </div>
-
-                    <div class="comments-section">
-                        <div class="comments-list">
-                            {% for comment in post.comments.all %}
-                                <div class="comment-item">
-                                    <div class="comment-author">{{ comment.author.username }}</div>
-                                    <div class="comment-text">{{ comment.content }}</div>
-                                    <div class="comment-date">{{ comment.created_at|date:"d/m/Y H:i" }}</div>
-                                </div>
-                            {% empty %}
-                                <div class="comment-empty">Aún no hay comentarios.</div>
-                            {% endfor %}
+                {% for post in posts %}
+                    <article class="post-card" id="post-{{ post.id }}">
+                        <div class="post-header">
+                            <div class="post-author">{{ post.author.username }}</div>
+                            <div class="post-date">{{ post.created_at|date:"d/m/Y H:i" }}</div>
                         </div>
 
-                        <form method="post" action="{% url 'add_comment' post.id %}" class="comment-form">
-                            {% csrf_token %}
-                            <textarea name="content" rows="2" class="comment-input" placeholder="Escribe un comentario..."></textarea>
-                            <button type="submit" class="comment-submit-btn">Comentar</button>
-                        </form>
-                    </div>
-                </article>
-            {% empty %}
-                <div class="post-card">
-                    <p>Aún no hay publicaciones.</p>
-                </div>
-            {% endfor %}
-        </div>
+                        {% if post.content %}
+                            <p class="post-content">{{ post.content }}</p>
+                        {% endif %}
 
-        <!-- Columna derecha: proyectos abiertos -->
-        <div>
-            <div class="post-card">
-                <h3>Proyectos abiertos</h3>
-
-                {% for project in projects %}
-                    <div style="margin-top: 1rem; padding-bottom: 0.9rem; border-bottom: 1px solid #e5e7eb;">
-                        <h4 class="project-title">
-                            <a href="{% url 'project_detail' project.id %}">
-                                {{ project.title }}
-                            </a>
-                        </h4>
-
-                        <span style="font-size: 0.85rem; color: #6b7280;">
-                            {{ project.owner.username }} · {{ project.owner.major }}
-                        </span>
-
-                        <p style="margin: 0.35rem 0 0.5rem 0;">
-                            {{ project.problem_and_goal|truncatechars:120 }}
-                        </p>
-
-                        <div style="font-size: 0.8rem; color: #9ca3af;">
-                            {{ project.get_project_type_display }} · {{ project.get_stage_display }}
-                        </div>
-
-                        <div style="font-size: 0.8rem; color: #9ca3af; margin-top: 0.2rem;">
-                            {{ project.vacancies }} vacante{{ project.vacancies|pluralize }}
-                        </div>
-
-                        <div style="font-size: 0.8rem; color: #9ca3af; margin-top: 0.2rem;">
-                            Modalidad: {{ project.get_work_mode_display }}
-                        </div>
-
-                        <div style="font-size: 0.8rem; color: #9ca3af; margin-top: 0.2rem;">
-                            Skills: {{ project.required_skills }}
-                        </div>
-
-                        {% if project.application_deadline %}
-                            <div style="font-size: 0.8rem; color: #9ca3af; margin-top: 0.2rem;">
-                                Fecha límite: {{ project.application_deadline|date:"d/m/Y" }}
+                        {% if post.image %}
+                            <div class="post-image-wrapper">
+                                <img src="{{ post.image.url }}" alt="Imagen de la publicación" class="post-image">
                             </div>
                         {% endif %}
-                    </div>
+
+                        {% if post.attachment %}
+                            <div class="post-attachment">
+                                <span class="post-attachment-badge">{{ post.attachment_extension|upper }}</span>
+                                <div class="post-attachment-info">
+                                    <strong>{{ post.attachment_name }}</strong>
+                                    <a href="{{ post.attachment.url }}" target="_blank" rel="noopener noreferrer">Abrir archivo</a>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <div class="post-meta">
+                            <form method="post" action="{% url 'toggle_like' post.id %}" class="like-form">
+                                {% csrf_token %}
+                                <button type="submit" class="like-btn">
+                                    <span class="like-btn-text">
+                                        {% if post.id in liked_post_ids %}
+                                            ❤️ Me gusta
+                                        {% else %}
+                                            🤍 Me gusta
+                                        {% endif %}
+                                    </span>
+                                </button>
+                            </form>
+
+                            <span class="likes-count">
+                                {{ post.likes.count }} me gusta{{ post.likes.count|pluralize }}
+                            </span>
+
+                            <span>·</span>
+
+                            <span class="comments-count">
+                                {{ post.comments.count }} comentario{{ post.comments.count|pluralize }}
+                            </span>
+                        </div>
+
+                        <div class="comments-section">
+                            <div class="comments-list">
+                                {% for comment in post.comments.all %}
+                                    <div class="comment-item">
+                                        <div class="comment-author">{{ comment.author.username }}</div>
+                                        <div class="comment-text">{{ comment.content }}</div>
+                                        <div class="comment-date">{{ comment.created_at|date:"d/m/Y H:i" }}</div>
+                                    </div>
+                                {% empty %}
+                                    <div class="comment-empty">Aún no hay comentarios.</div>
+                                {% endfor %}
+                            </div>
+
+                            <form method="post" action="{% url 'add_comment' post.id %}" class="comment-form">
+                                {% csrf_token %}
+                                <textarea name="content" rows="2" class="comment-input" placeholder="Escribe un comentario..."></textarea>
+                                <button type="submit" class="comment-submit-btn">Comentar</button>
+                            </form>
+                        </div>
+                    </article>
                 {% empty %}
-                    <p>No hay proyectos abiertos aún.</p>
+                    <div class="post-card">
+                        <p>Aún no hay publicaciones.</p>
+                    </div>
                 {% endfor %}
+            </div>
+        </div>
+        <!-- Columna derecha: proyectos abiertos -->
+        <div class="feed-column">
+        <!-- columna derecha -->
+            <div>
+                <div class="post-card">
+                    <div class="projects-header">
+                        <h3>Proyectos abiertos</h3>
+                        <button type="button" class="filter-toggle-btn" id="toggleProjectFilters">
+                            Filtros
+                        </button>
+                    </div>
+
+                    <div class="project-filters hidden" id="projectFilters">
+                        <form method="get" class="project-filter-form">
+                            <p class="project-filter-label">Perfil / carrera buscada</p>
+
+                            <div class="career-options">
+                                {% for career in available_careers %}
+                                    <label class="career-option">
+                                        <input
+                                            type="checkbox"
+                                            name="career"
+                                            value="{{ career.value }}"
+                                            {% if career.value in selected_careers %}checked{% endif %}
+                                        >
+                                        <span>{{ career.label }}</span>
+                                    </label>
+                                {% empty %}
+                                    <p class="no-careers-text">No hay carreras disponibles para filtrar.</p>
+                                {% endfor %}
+                            </div>
+
+                            <div class="project-filter-actions">
+                                <button type="submit" class="apply-filter-btn">Aplicar</button>
+                                <a href="{% url 'home' %}" class="clear-filter-btn">Limpiar</a>
+                            </div>
+                        </form>
+                    </div>
+
+                    {% if selected_career_labels %}
+                        <div class="active-filter-tags">
+                            {% for career in selected_career_labels %}
+                                <span class="active-filter-tag">{{ career }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    {% for project in projects %}
+                        <div style="margin-top: 1rem; padding-bottom: 0.9rem; border-bottom: 1px solid #e5e7eb;">
+                            <h4 class="project-title">
+                                <a href="{% url 'project_detail' project.id %}">
+                                    {{ project.title }}
+                                </a>
+                            </h4>
+
+                            <span style="font-size: 0.85rem; color: #6b7280;">
+                                {{ project.owner.username }} · {{ project.owner.major }}
+                            </span>
+
+                            <p style="margin: 0.35rem 0 0.5rem 0;">
+                                {{ project.problem_and_goal|truncatechars:120 }}
+                            </p>
+
+                            <div style="font-size: 0.8rem; color: #9ca3af;">
+                                {{ project.get_project_type_display }} · {{ project.get_stage_display }}
+                            </div>
+
+                            <div style="font-size: 0.8rem; color: #9ca3af; margin-top: 0.2rem;">
+                                {{ project.vacancies }} vacante{{ project.vacancies|pluralize }}
+                            </div>
+
+                            <div style="font-size: 0.8rem; color: #9ca3af; margin-top: 0.2rem;">
+                                Modalidad: {{ project.get_work_mode_display }}
+                            </div>
+
+                            <div style="font-size: 0.8rem; color: #9ca3af; margin-top: 0.2rem;">
+                                Skills: {{ project.required_skills }}
+                            </div>
+
+                            {% if project.application_deadline %}
+                                <div style="font-size: 0.8rem; color: #9ca3af; margin-top: 0.2rem;">
+                                    Fecha límite: {{ project.application_deadline|date:"d/m/Y" }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% empty %}
+                        <p>No hay proyectos abiertos aún.</p>
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </div>

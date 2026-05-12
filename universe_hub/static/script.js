@@ -194,4 +194,13 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+    
+    const toggleProjectFilters = document.getElementById('toggleProjectFilters');
+    const projectFilters = document.getElementById('projectFilters');
+
+    if (toggleProjectFilters && projectFilters) {
+        toggleProjectFilters.addEventListener('click', function () {
+            projectFilters.classList.toggle('hidden');
+        });
+    }
 });
