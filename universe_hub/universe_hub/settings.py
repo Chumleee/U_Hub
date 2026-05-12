@@ -198,3 +198,7 @@ CSRF_USE_SESSIONS = True
 CSRF_COOKIE_HTTPONLY = False  
 # Ayuda a que el navegador maneje mejor el token en entornos de desarrollo
 CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1', 'http://localhost']
+
+import os
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

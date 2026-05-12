@@ -7,6 +7,8 @@ class StudentUser(AbstractUser):
     major = models.CharField(max_length=150, blank=True)     # carrera
     semester = models.PositiveSmallIntegerField(default=1)
     bio = models.TextField(blank=True)
+    profile_picture = models.ImageField(upload_to='profile_pics/', default='profile_pics/default_user.png', blank=True)
+    cover_photo = models.ImageField(upload_to='cover_photos/', default='cover_photos/default_cover.png', blank=True)
 
     def __str__(self):
         return f"{self.username} - {self.major}"

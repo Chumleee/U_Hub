@@ -12,4 +12,7 @@ urlpatterns = [
     path('projects/<int:project_id>/apply/', views.apply_to_project, name='apply_to_project'),
     path('applications/<int:application_id>/accept/', views.accept_application, name='accept_application'),
     path('applications/<int:application_id>/reject/', views.reject_application, name='reject_application'),
+    path('profile/', views.profile, name='profile'),
+    path('profile/edit/', views.edit_profile, name='edit_profile'),
+    path('profile/<str:username>/', views.profile, name='user_profile'),
 ]

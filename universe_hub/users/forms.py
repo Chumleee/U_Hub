@@ -40,3 +40,21 @@ class StudentUserCreationForm(UserCreationForm):
             'password1': 'Contraseña',
             'password2': 'Confirmar contraseña',
         }
+
+
+class StudentUserUpdateForm(forms.ModelForm):
+    class Meta:
+        model = StudentUser
+        fields = ['first_name', 'last_name', 'profile_picture', 'cover_photo', 'university', 'major', 'semester', 'bio']
+        labels = {
+            'university': 'Universidad',
+            'major': 'Carrera',
+            'semester': 'Semestre actual',
+            'bio': 'Biografía',
+        }
+        widgets = {
+            # Cambiamos ClearableFileInput por FileInput para eliminar el "Borrar"
+            'profile_picture': forms.FileInput(attrs={'class': 'custom-file-input'}),
+            'cover_photo': forms.FileInput(attrs={'class': 'custom-file-input'}),
+            'bio': forms.Textarea(attrs={'rows': 3, 'class': 'form-input'}),
+        }

@@ -9,6 +9,8 @@ from .models import StudentUser
 
 from posts.models import Post, Project, Like, Comment, ProjectApplication
 from posts.forms import PostForm, ProjectForm, CommentForm
+from .forms import StudentUserCreationForm, StudentUserUpdateForm
+
 
 
 def register(request):
@@ -276,5 +278,34 @@ def reject_application(request, application_id):
     return redirect('home')
 
 @login_required
-def profile(request):
-    return render(request, 'profile.html', {'user': request.user})
+def profile(request, username=None):
+    # Si entramos a /profile/ vemos nuestro perfil. 
+    # Si entramos a /profile/juan/ vemos el de juan.
+    if username:
+        user_profile = get_object_or_404(StudentUser, username=username)
+    else:
+        user_profile = request.user
+    
+    # Obtenemos sus posts (necesitas importar Post de posts.models)
+    user_posts = Post.objects.filter(author=user_profile).order_by('-created_at')
+    
+    context = {
+        'user_profile': user_profile,
+        'user_posts': user_posts,
+        'is_own_profile': user_profile == request.user
+    }
+    return render(request, 'users/profile.html', context)
+
+@login_required
+def edit_profile(request):
+    if request.method == 'POST':
+        # MUY IMPORTANTE: request.FILES debe ir aquí
+        form = StudentUserUpdateForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Perfil actualizado correctamente")
+            return redirect('profile')
+    else:
+        form = StudentUserUpdateForm(instance=request.user)
+    
+    return render(request, 'users/edit_profile.html', {'form': form})

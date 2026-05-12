@@ -6,10 +6,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Universe Hub{% endblock %}</title>
     <link rel="icon" type="image/x-icon" href="{% static 'img/logo.png' %}">
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    
+    <link rel="stylesheet" href="{% static 'styles.css' %}?v=2">
+
+    <style>
+        :root {
+            --indigo-electric: #4f46e5;
+            --white: #ffffff;
+            --gray-light: #f3f4f6;
+            --gray-slate: #64748b;
+        }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: var(--gray-light);
+            margin: 0;
+            color: #1e293b;
+        }
+        /* Estilos base para el Navbar que pusimos en el home */
+        .header {
+            background: var(--white);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
     {% block extra_css %}{% endblock %}
 </head>
 <body>
     {% block content %}{% endblock %}
+    
+    {% block extra_js %}{% endblock %}
 </body>
 </html>
