@@ -366,12 +366,15 @@ def profile(request, username=None):
 @login_required
 def edit_profile(request):
     if request.method == 'POST':
-        # MUY IMPORTANTE: request.FILES debe ir aquí
+        # VITAL: request.FILES debe estar presente
         form = StudentUserUpdateForm(request.POST, request.FILES, instance=request.user)
         if form.is_valid():
             form.save()
-            messages.success(request, "Perfil actualizado correctamente")
+            messages.success(request, '¡Perfil actualizado con éxito!')
             return redirect('profile')
+        else:
+            # Esto imprimirá los errores en tu terminal de VS Code para que sepamos qué falla
+            print(form.errors) 
     else:
         form = StudentUserUpdateForm(instance=request.user)
     

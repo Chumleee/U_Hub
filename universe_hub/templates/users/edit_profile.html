@@ -1,14 +1,25 @@
 {% extends 'base.html' %}
 
 {% block content %}
+{% if form.errors %}
+    <div style="background: #fee2e2; color: #b91c1c; padding: 1rem; border-radius: 8px; margin: 1rem auto; max-width: 600px; border: 1px solid #fecaca;">
+        <strong>Corrije los siguientes campos:</strong>
+        <ul style="margin-top: 5px; padding-left: 20px;">
+            {% for field, errors in form.errors.items %}
+                <li>{{ field|title }}: {{ errors|striptags }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
 <div class="feed" style="display: flex; justify-content: center; padding: 2rem;">
-    <div class="post-card" style="max-width: 600px; width: 100%;">
-        <h2 style="color: var(--indigo-electric); margin-bottom: 1.5rem;">Editar Perfil</h2>
+    <div class="post-card" style="max-width: 600px; width: 100%; padding: 2rem;">
+        <h2 style="color: var(--indigo-electric); margin-bottom: 1.5rem; text-align: center;">Configuración de Perfil</h2>
         
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.2rem;">
                 <div>
                     <label>Nombre(s)</label>
                     {{ form.first_name }}
@@ -19,75 +30,91 @@
                 </div>
             </div>
 
-        <div style="margin-bottom: 1.5rem;">
-            <label style="font-weight: 600; color: #1e293b; display: block; margin-bottom: 0.5rem;">Foto de Portada</label>
-            <div class="upload-wrapper">
-                <span class="upload-icon">🖼️</span>
-                {{ form.cover_photo }}
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; margin-bottom: 1.2rem;">
+                <div>
+                    <label>Universidad</label>
+                    {{ form.university }}
+                </div>
+                <div>
+                    <label>Semestre</label>
+                    {{ form.semester }}
+                </div>
             </div>
-        </div>
-        
-        <div style="margin-bottom: 1.5rem;">
-            <label style="font-weight: 600; color: #1e293b; display: block; margin-bottom: 0.5rem;">Foto de Perfil</label>
-            <div class="upload-wrapper">
-                <span class="upload-icon">👤</span>
-                {{ form.profile_picture }}
-            </div>
-        </div>
 
-            <div style="margin-bottom: 1rem;">
-                <label>Biografía</label>
+            <div style="margin-bottom: 1.2rem;">
+                <label>Carrera</label>
+                {{ form.major }}
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label>Foto de Portada</label>
+                <div class="upload-wrapper">
+                    <span class="upload-icon">🖼️</span>
+                    {{ form.cover_photo }}
+                </div>
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label>Foto de Perfil</label>
+                <div class="upload-wrapper">
+                    <span class="upload-icon">👤</span>
+                    {{ form.profile_picture }}
+                </div>
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label>Biografía académica</label>
                 {{ form.bio }}
             </div>
 
-            <div style="display: flex; gap: 1rem;">
-                <button type="submit" class="post-submit-btn" style="flex: 1;">Guardar Cambios</button>
-                <a href="{% url 'profile' %}" style="flex: 1; text-align: center; text-decoration: none; padding: 0.75rem; border: 1px solid #ddd; border-radius: 8px; color: #666;">Cancelar</a>
+            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                <button type="submit" class="post-submit-btn" style="flex: 2; cursor: pointer;">
+                    Guardar Cambios
+                </button>
+                <a href="{% url 'profile' %}" style="flex: 1; text-align: center; text-decoration: none; padding: 0.75rem; border: 1px solid #ddd; border-radius: 8px; color: #666; font-weight: 600;">
+                    Cancelar
+                </a>
             </div>
         </form>
     </div>
 </div>
 
 <style>
-    label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.9rem; color: #374151; }
-    input[type="text"], input[type="number"], textarea {
-        width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 8px; box-sizing: border-box;
+    /* Estilos para que los inputs no se vean planos y coincidan con el Home */
+    label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.9rem; color: #334155; }
+    
+    input[type="text"], 
+    input[type="number"], 
+    textarea, 
+    select {
+        width: 100%; 
+        padding: 0.75rem; 
+        border: 1px solid #e2e8f0; 
+        border-radius: 8px; 
+        box-sizing: border-box;
+        background-color: #f8fafc;
+        font-family: inherit;
+        transition: 0.3s;
     }
-    /* Estilo para los botones de archivo para que no se vean raros */
-    input[type="file"] {
-        padding: 10px;
-        background: #f9fafb;
-        width: 100%;
-        border-radius: 8px;
-        border: 1px dashed #d1d5db;
+
+    input:focus, textarea:focus {
+        outline: none;
+        border-color: var(--indigo-electric);
+        background-color: white;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
     }
-    /* Estilo para los contenedores de carga */
+
     .upload-wrapper {
         position: relative;
         border: 2px dashed #e2e8f0;
         border-radius: 12px;
-        padding: 1rem;
+        padding: 0.8rem;
         display: flex;
         align-items: center;
         gap: 10px;
         background: #f8fafc;
-        transition: 0.3s;
-    }
-    .upload-wrapper:hover {
-        border-color: var(--indigo-electric);
-        background: #eff6ff;
     }
 
-    .upload-icon {
-        font-size: 1.2rem;
-    }
-
-    /* Estilizamos el input real de archivos */
-    .custom-file-input {
-        width: 100%;
-        font-size: 0.9rem;
-        color: #64748b;
-        cursor: pointer;
-    }
+    .upload-icon { font-size: 1.2rem; }
 </style>
 {% endblock %}
