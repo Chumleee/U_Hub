@@ -3,12 +3,23 @@ from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.contrib import messages
+from django.db.models import Q
 
 from .forms import StudentUserCreationForm
 from .models import StudentUser
 
 from posts.models import Post, Project, Like, Comment, ProjectApplication
 from posts.forms import PostForm, ProjectForm, CommentForm
+
+CAREER_LABELS = {
+    'arts': 'Artes',
+    'business': 'Negocios',
+    'design': 'Diseño',
+    'engineering': 'Ingeniero',
+    'health': 'Salud',
+    'law': 'Derecho',
+    'other': 'Otros',
+}
 
 
 def register(request):
@@ -60,9 +71,38 @@ def home(request):
         'comments__author'
     ).order_by('-created_at')[:20]
 
-    projects = Project.objects.select_related('owner').filter(
+    selected_careers = request.GET.getlist('career')
+
+    base_projects = Project.objects.select_related('owner').filter(
         status='open'
-    ).order_by('-created_at')[:10]
+    )
+
+    raw_careers = sorted({
+        career.strip()
+        for value in base_projects.values_list('target_careers', flat=True)
+        if value
+        for career in value.split(',')
+        if career.strip()
+    })
+
+    available_careers = [
+        {
+            'value': career,
+            'label': CAREER_LABELS.get(career, career.replace('_', ' ').title())
+        }
+        for career in raw_careers
+    ]
+
+    projects = base_projects
+
+    if selected_careers:
+        career_query = Q()
+        for career in selected_careers:
+            career_query |= Q(target_careers__icontains=career)
+
+        projects = projects.filter(career_query)
+
+    projects = projects.order_by('-created_at')[:10]
 
     liked_post_ids = set(
         Like.objects.filter(user=request.user).values_list('post_id', flat=True)
@@ -76,15 +116,42 @@ def home(request):
         status='pending'
     ).order_by('-created_at')
 
+    my_applications = ProjectApplication.objects.select_related(
+        'project',
+        'project__owner'
+    ).filter(
+        applicant=request.user
+    ).exclude(
+        status='accepted'
+    ).order_by('-created_at')
+
+    joined_projects = ProjectApplication.objects.select_related(
+        'project',
+        'project__owner'
+    ).filter(
+        applicant=request.user,
+        status='accepted'
+    ).order_by('-created_at')
+
+    selected_career_labels = [
+        CAREER_LABELS.get(career, career.replace('_', ' ').title())
+        for career in selected_careers
+    ]
+
     context = {
         'post_form': post_form,
         'project_form': project_form,
         'comment_form': comment_form,
         'posts': posts,
+        'available_careers': available_careers,
+        'selected_careers': selected_careers,
         'projects': projects,
         'liked_post_ids': liked_post_ids,
         'pending_requests': pending_requests,
         'pending_requests_count': pending_requests.count(),
+        'my_applications': my_applications,
+        'joined_projects': joined_projects,
+        'selected_career_labels': selected_career_labels,
     }
 
     return render(request, 'home.html', context)
