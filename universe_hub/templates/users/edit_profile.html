@@ -3,7 +3,7 @@
 {% block content %}
 {% if form.errors %}
     <div style="background: #fee2e2; color: #b91c1c; padding: 1rem; border-radius: 8px; margin: 1rem auto; max-width: 600px; border: 1px solid #fecaca;">
-        <strong>Corrije los siguientes campos:</strong>
+        <strong>Corrige los siguientes campos:</strong>
         <ul style="margin-top: 5px; padding-left: 20px;">
             {% for field, errors in form.errors.items %}
                 <li>{{ field|title }}: {{ errors|striptags }}</li>
@@ -16,7 +16,7 @@
     <div class="post-card" style="max-width: 600px; width: 100%; padding: 2rem;">
         <h2 style="color: var(--indigo-electric); margin-bottom: 1.5rem; text-align: center;">Configuración de Perfil</h2>
         
-        <form method="post" enctype="multipart/form-data">
+        <form method="post">
             {% csrf_token %}
             
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.2rem;">
@@ -47,22 +47,6 @@
             </div>
 
             <div style="margin-bottom: 1.5rem;">
-                <label>Foto de Portada</label>
-                <div class="upload-wrapper">
-                    <span class="upload-icon">🖼️</span>
-                    {{ form.cover_photo }}
-                </div>
-            </div>
-
-            <div style="margin-bottom: 1.5rem;">
-                <label>Foto de Perfil</label>
-                <div class="upload-wrapper">
-                    <span class="upload-icon">👤</span>
-                    {{ form.profile_picture }}
-                </div>
-            </div>
-
-            <div style="margin-bottom: 1.5rem;">
                 <label>Biografía académica</label>
                 {{ form.bio }}
             </div>
@@ -80,7 +64,6 @@
 </div>
 
 <style>
-    /* Estilos para que los inputs no se vean planos y coincidan con el Home */
     label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.9rem; color: #334155; }
     
     input[type="text"], 
@@ -103,18 +86,5 @@
         background-color: white;
         box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
     }
-
-    .upload-wrapper {
-        position: relative;
-        border: 2px dashed #e2e8f0;
-        border-radius: 12px;
-        padding: 0.8rem;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        background: #f8fafc;
-    }
-
-    .upload-icon { font-size: 1.2rem; }
 </style>
 {% endblock %}

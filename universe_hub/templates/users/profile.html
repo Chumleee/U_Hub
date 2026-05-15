@@ -5,63 +5,391 @@
     <div class="logo">Universe Hub</div>
     <div class="header-right" style="display: flex; align-items: center; gap: 15px;">
         <a href="{% url 'home' %}" style="text-decoration: none; color: var(--gray-slate); font-weight: 600;">Inicio</a>
-        <a href="{% url 'profile' %}" style="display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--indigo-electric); font-weight: 600;">
-            {% if user.profile_picture %}
+
+        <div class="profile-menu-container" style="position: relative;">
+            <div id="profile-menu-trigger" style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--indigo-electric); font-weight: 600;">
+                {% if user.profile_picture %}
                 <img src="{{ user.profile_picture.url }}" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #e2e8f0;">
-            {% else %}
+                {% else %}
                 <span style="font-size: 1.2rem;">👤</span>
-            {% endif %}
-            Mi Perfil
-        </a>
-    </div>
-</div>
-
-<div class="feed" style="display: block; max-width: 900px; margin: 0 auto; padding: 0 20px;">
-    <div style="background: white; border-radius: 0 0 12px 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.08); position: relative; margin-bottom: 2rem;">
-        
-        <div style="height: 240px; background: {% if user_profile.cover_photo %} url('{{ user_profile.cover_photo.url }}') {% else %} #cbd5e1 {% endif %} center/cover no-repeat;">
-        </div>
-        
-        <div style="position: absolute; top: 140px; left: 40px; border: 5px solid white; border-radius: 50%; width: 160px; height: 160px; background: white; overflow: hidden; shadow: 0 4px 10px rgba(0,0,0,0.1);">
-            {% if user_profile.profile_picture %}
-                <img src="{{ user_profile.profile_picture.url }}" style="width: 100%; height: 100%; object-fit: cover;">
-            {% else %}
-                <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #f1f5f9; font-size: 4rem;">👤</div>
-            {% endif %}
-        </div>
-
-        <div style="padding: 70px 40px 30px 40px; display: flex; justify-content: space-between; align-items: flex-start;">
-            <div>
-                <h1 style="margin: 0; color: #1e293b; font-size: 1.8rem;">
-                    {{ user_profile.get_full_name|default:user_profile.username }}
-                </h1>
-                <p style="margin: 8px 0; color: var(--indigo-electric); font-weight: 700; font-size: 1.1rem;">
-                    {{ user_profile.major|default:"Estudiante" }}
-                </p>
-                <p style="margin: 0; color: #64748b; font-size: 1rem;">
-                    {{ user_profile.university|default:"Universidad no especificada" }}
-                </p>
-                
-                <div style="margin-top: 15px;">
-                    <span style="background: #eff6ff; color: #1e40af; padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; border: 1px solid #dbeafe;">
-                        {{ user_profile.semester }}° Semestre
-                    </span>
-                </div>
+                {% endif %}
+                Mi Perfil <span style="font-size: 0.7rem; margin-left: 2px;">▼</span>
             </div>
 
-            {% if is_own_profile %}
-            <a href="{% url 'edit_profile' %}" class="post-submit-btn" style="text-decoration: none; padding: 10px 24px; font-size: 0.9rem; width: auto; border-radius: 8px;">
-                Editar Perfil
-            </a>
-            {% endif %}
+            <div id="profile-dropdown" class="dropdown-menu">
+                <div class="dropdown-header">
+                    <strong>{{ user.get_full_name|default:user.username }}</strong>
+                    <span>{{ user.major|default:"Estudiante" }}</span>
+                </div>
+                <hr style="border: 0; border-top: 1px solid #f1f5f9; margin: 8px 0;">
+
+                <a href="{% url 'profile' %}">👤 Ver mi perfil</a>
+                <a href="{% url 'edit_profile' %}">⚙️ Configuración</a>
+
+                <hr style="border: 0; border-top: 1px solid #f1f5f9; margin: 8px 0;">
+
+                <form method="post" action="{% url 'account_logout' %}" style="margin: 0; padding: 0;">
+                    {% csrf_token %}
+                    <button type="submit" class="logout-btn">
+                        🚪 Cerrar sesión
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
+</div>
 
-    <div class="post-card" style="padding: 2rem;">
-        <h3 style="margin-top: 0; color: #1e293b; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">Acerca de</h3>
-        <p style="line-height: 1.8; color: #475569; font-size: 1rem;">
-            {{ user_profile.bio|default:"Este estudiante aún no ha compartido su biografía." }}
-        </p>
+<div class="feed" style="display: block; max-width: 900px; margin: 0 auto; padding: 0 20px; padding-bottom: 3rem;">
+    
+    <div style="background: white; border-radius: 0 0 12px 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.08); position: relative; margin-bottom: 2.5rem;">
+
+        <div style="height: 240px; background: {% if user_profile.cover_photo %} url('{{ user_profile.cover_photo.url }}') {% else %} #cbd5e1 {% endif %} center/cover no-repeat; position: relative;">
+            {% if is_own_profile %}
+            <form id="form-cover" method="POST" enctype="multipart/form-data" style="display: none;">
+                {% csrf_token %}
+                <input type="file" id="input-cover" name="cover_photo" accept="image/*">
+            </form>
+            <label for="input-cover" class="widget-photo-btn widget-cover-btn" title="Editar portada">
+                📷 Cambiar portada
+            </label>
+            {% endif %}
+        </div>
+
+        <div class="profile-pic-wrapper" style="position: absolute; top: 140px; left: 40px; border: 5px solid white; border-radius: 50%; width: 160px; height: 160px; background: white; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+            {% if user_profile.profile_picture %}
+            <img src="{{ user_profile.profile_picture.url }}" style="width: 100%; height: 100%; object-fit: cover;">
+            {% else %}
+            <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #f1f5f9; font-size: 4rem;">👤</div>
+            {% endif %}
+
+            {% if is_own_profile %}
+            <form id="form-profile-pic" method="POST" enctype="multipart/form-data" style="display: none;">
+                {% csrf_token %}
+                <input type="file" id="input-profile-pic" name="profile_picture" accept="image/*">
+            </form>
+            <label for="input-profile-pic" class="widget-photo-btn widget-profile-btn" title="Actualizar foto">
+                📷
+            </label>
+            {% endif %}
+        </div>
+
+        <div style="padding: 70px 40px 40px 40px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                    <h1 style="margin: 0; color: #1e293b; font-size: 1.8rem;">
+                        {{ user_profile.get_full_name|default:user_profile.username }}
+                    </h1>
+                    <p style="margin: 8px 0; color: var(--indigo-electric); font-weight: 700; font-size: 1.1rem;">
+                        {{ user_profile.major|default:"Estudiante" }}
+                    </p>
+                    <p style="margin: 0; color: #64748b; font-size: 1rem;">
+                        {{ user_profile.university|default:"Universidad no especificada" }}
+                    </p>
+                    <div style="margin-top: 15px;">
+                        <span style="background: #eff6ff; color: #1e40af; padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; border: 1px solid #dbeafe;">
+                            {{ user_profile.semester }}° Semestre
+                        </span>
+                    </div>
+                </div>
+
+                {% if is_own_profile %}
+                <a href="{% url 'edit_profile' %}" class="post-submit-btn" style="text-decoration: none; padding: 10px 24px; font-size: 0.9rem; width: auto; border-radius: 8px;">
+                    Editar Perfil
+                </a>
+                {% endif %}
+            </div>
+
+            <div style="margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 25px;">
+                <h3 style="margin: 0 0 12px 0; color: #1e293b; font-size: 1.2rem;">Acerca de</h3>
+                <p style="line-height: 1.7; color: #475569; font-size: 1rem; margin: 0; white-space: pre-wrap;">{{ user_profile.bio|default:"Este estudiante aún no ha compartido su biografía." }}</p>
+            </div>
+        </div>
+    </div> 
+
+    <div class="profile-activity-layout">
+        
+        <div>
+            <h2 style="color: #1e293b; font-size: 1.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px;">
+                 Publicaciones
+            </h2>
+            
+            <div class="scrollable-posts-container">
+                {% for post in user_posts %}
+                <article class="post-card" style="margin-bottom: 1.5rem; background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                    
+                    <div style="padding: 1.5rem;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span style="font-weight: bold; color: var(--indigo-electric);">{{ post.author.username }}</span>
+                            <span style="color: #94a3b8; font-size: 0.8rem;">{{ post.created_at|date:"d M, Y" }}</span>
+                        </div>
+                        <p style="margin: 0; color: #334155;">{{ post.content }}</p>
+                        {% if post.image %}
+                        <img src="{{ post.image.url }}" style="width: 100%; border-radius: 8px; margin-top: 15px;">
+                        {% endif %}
+                    </div>
+
+                    <div style="padding: 0 1.5rem 1.5rem 1.5rem;">
+                        <div class="post-meta">
+                            <form method="post" action="{% url 'toggle_like' post.id %}" class="like-form">
+                                {% csrf_token %}
+                                <button type="submit" class="like-btn">
+                                    <span class="like-btn-text">
+                                        {% if post.id in liked_post_ids %}
+                                            ❤️ Me gusta
+                                        {% else %}
+                                            🤍 Me gusta
+                                        {% endif %}
+                                    </span>
+                                </button>
+                            </form>
+
+                            <span class="likes-count">
+                                {{ post.likes.count }} me gusta{{ post.likes.count|pluralize }}
+                            </span>
+                            <span>·</span>
+                            <span class="comments-count">
+                                {{ post.comments.count }} comentario{{ post.comments.count|pluralize }}
+                            </span>
+                        </div>
+
+                        <div class="comments-section">
+                            <div class="comments-list">
+                                {% for comment in post.comments.all %}
+                                    <div class="comment-item">
+                                        <div class="comment-author">{{ comment.author.username }}</div>
+                                        <div class="comment-text">{{ comment.content }}</div>
+                                        <div class="comment-date">{{ comment.created_at|date:"d/m/Y H:i" }}</div>
+                                    </div>
+                                {% empty %}
+                                    <div class="comment-empty">Aún no hay comentarios.</div>
+                                {% endfor %}
+                            </div>
+
+                            <form method="post" action="{% url 'add_comment' post.id %}" class="comment-form">
+                                {% csrf_token %}
+                                <textarea name="content" rows="2" class="comment-input" placeholder="Escribe un comentario..."></textarea>
+                                <button type="submit" class="comment-submit-btn">Comentar</button>
+                            </form>
+                        </div>
+                    </div>
+
+                </article>
+                {% empty %}
+                <div class="post-card" style="padding: 2rem; text-align: center; color: #64748b;">
+                    Aún no hay publicaciones en este perfil.
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <h2 style="color: #1e293b; font-size: 1.5rem; margin-bottom: 0; display: flex; align-items: center; gap: 10px;">
+                 Proyectos
+            </h2>
+            
+            <div class="post-card" style="padding: 1.5rem; margin: 0; background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                <h3 style="margin-top: 0; color: #1e293b; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; font-size: 1.1rem;">
+                    Mis Proyectos
+                </h3>
+                {% for project in user_projects %}
+                <div style="padding: 12px 0; border-bottom: 1px solid #f1f5f9;">
+                    <a href="{% url 'project_detail' project.id %}" style="text-decoration: none; color: var(--indigo-electric); font-weight: 600;">
+                        {{ project.title }}
+                    </a>
+                    <div style="font-size: 0.8rem; color: #9ca3af; margin-top: 4px;">
+                        {{ project.get_project_type_display }}
+                    </div>
+                </div>
+                {% empty %}
+                <p style="color: #64748b; font-size: 0.9rem; margin-top: 15px;">No hay proyectos creados.</p>
+                {% endfor %}
+            </div>
+
+            <div class="post-card" style="padding: 1.5rem; margin: 0; background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                <h3 style="margin-top: 0; color: #1e293b; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; font-size: 1.1rem;">
+                    Colaboraciones
+                </h3>
+                {% for app in joined_projects %}
+                <div style="padding: 12px 0; border-bottom: 1px solid #f1f5f9;">
+                    <a href="{% url 'project_detail' app.project.id %}" style="text-decoration: none; color: var(--indigo-electric); font-weight: 600;">
+                        {{ app.project.title }}
+                    </a>
+                    <div style="font-size: 0.8rem; color: #9ca3af; margin-top: 4px;">
+                        Líder: {{ app.project.owner.username }}
+                    </div>
+                </div>
+                {% empty %}
+                <p style="color: #64748b; font-size: 0.9rem; margin-top: 15px;">Sin colaboraciones activas.</p>
+                {% endfor %}
+            </div>
+        </div>
+
     </div>
 </div>
+
+<style>
+    /* ========================================= */
+    /* DESBLOQUEAR SCROLL GENERAL DEL PERFIL     */
+    /* ========================================= */
+    body, html {
+        overflow-y: auto !important;
+        height: auto !important;
+    }
+    .feed {
+        overflow-y: visible !important;
+        height: auto !important;
+    }
+
+    /* ========================================= */
+    /* DISEÑO A DOS COLUMNAS (GRID)              */
+    /* ========================================= */
+    .profile-activity-layout {
+        display: grid;
+        grid-template-columns: 2fr 1fr; /* Columna izq más ancha, col der más angosta */
+        gap: 2rem;
+        align-items: start; /* Para que las columnas no se estiren de más */
+    }
+
+    /* Para móviles y pantallas pequeñas */
+    @media (max-width: 850px) {
+        .profile-activity-layout {
+            grid-template-columns: 1fr; /* Pone una columna debajo de la otra */
+        }
+    }
+
+    /* ========================================= */
+    /* WIDGETS Y MENÚS                           */
+    /* ========================================= */
+    .widget-photo-btn {
+        position: absolute;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        z-index: 10;
+    }
+    .widget-cover-btn {
+        bottom: 15px;
+        right: 15px;
+        background: rgba(255, 255, 255, 0.9);
+        color: #334155;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    .widget-cover-btn:hover { background: white; transform: scale(1.05); }
+    
+    .widget-profile-btn {
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 35%;
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+        font-size: 1.5rem;
+        opacity: 0;
+    }
+    .profile-pic-wrapper:hover .widget-profile-btn { opacity: 1; }
+    .widget-profile-btn:hover { background: rgba(0, 0, 0, 0.7); }
+
+    .profile-menu-container { position: relative; }
+    .dropdown-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: white;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        border-radius: 10px;
+        padding: 10px 0;
+        min-width: 180px;
+        z-index: 1000;
+        margin-top: 12px;
+        border: 1px solid #e2e8f0;
+    }
+    .dropdown-menu.show { display: block; animation: fadeIn 0.2s ease; }
+    .dropdown-header { padding: 5px 20px; display: flex; flex-direction: column; }
+    .dropdown-header strong { font-size: 0.9rem; color: #1e293b; }
+    .dropdown-header span { font-size: 0.75rem; color: #64748b; }
+    .dropdown-menu a, .logout-btn {
+        display: block;
+        padding: 10px 20px;
+        color: #475569;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: 0.2s;
+        width: 100%;
+        text-align: left;
+        border: none;
+        background: none;
+        cursor: pointer;
+        font-family: inherit;
+        box-sizing: border-box;
+    }
+    .dropdown-menu a:hover, .logout-btn:hover { background: #f8fafc; color: var(--indigo-electric); }
+    .logout-btn { color: #ef4444; font-weight: 600; }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ========================================= */
+    /* SCROLL DE PUBLICACIONES                   */
+    /* ========================================= */
+    .scrollable-posts-container {
+        max-height: 600px;
+        overflow-y: auto;
+        padding-right: 12px;
+    }
+    .scrollable-posts-container::-webkit-scrollbar {
+        width: 6px;
+    }
+    .scrollable-posts-container::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 10px;
+    }
+    .scrollable-posts-container::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 10px;
+    }
+    .scrollable-posts-container::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+    }
+</style>
+
+<script>
+    const inputCover = document.getElementById('input-cover');
+    if (inputCover) {
+        inputCover.addEventListener('change', function() {
+            if (this.files.length > 0) document.getElementById('form-cover').submit();
+        });
+    }
+
+    const inputProfilePic = document.getElementById('input-profile-pic');
+    if (inputProfilePic) {
+        inputProfilePic.addEventListener('change', function() {
+            if (this.files.length > 0) document.getElementById('form-profile-pic').submit();
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const trigger = document.getElementById('profile-menu-trigger');
+        const dropdown = document.getElementById('profile-dropdown');
+        if (trigger && dropdown) {
+            trigger.addEventListener('click', function(e) {
+                e.stopPropagation();
+                dropdown.classList.toggle('show');
+            });
+            document.addEventListener('click', function(e) {
+                if (!dropdown.contains(e.target) && !trigger.contains(e.target)) {
+                    dropdown.classList.remove('show');
+                }
+            });
+        }
+    });
+</script>
 {% endblock %}

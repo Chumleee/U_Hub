@@ -11,6 +11,7 @@ from .models import StudentUser
 from posts.models import Post, Project, Like, Comment, ProjectApplication
 from posts.forms import PostForm, ProjectForm, CommentForm
 from .forms import StudentUserCreationForm, StudentUserUpdateForm
+from posts.models import Post, Project, ProjectApplication
 
 
 CAREER_LABELS = {
@@ -345,22 +346,46 @@ def reject_application(request, application_id):
     return redirect('home')
 
 @login_required
-def profile(request, username=None):
-    # Si entramos a /profile/ vemos nuestro perfil. 
-    # Si entramos a /profile/juan/ vemos el de juan.
-    if username:
-        user_profile = get_object_or_404(StudentUser, username=username)
-    else:
-        user_profile = request.user
+def profile(request):
+    user_profile = request.user 
+
+    # --- Lógica para procesar las fotos (POST) ---
+    if request.method == 'POST':
+        # Revisamos si viene la foto de portada
+        if 'cover_photo' in request.FILES:
+            user_profile.cover_photo = request.FILES['cover_photo']
+            user_profile.save()
+            
+        # Revisamos si viene la foto de perfil
+        if 'profile_picture' in request.FILES:
+            user_profile.profile_picture = request.FILES['profile_picture']
+            user_profile.save()
+            
+        return redirect('profile')
+
+    # --- Lógica para obtener actividad (GET) ---
     
-    # Obtenemos sus posts (necesitas importar Post de posts.models)
-    user_posts = Post.objects.filter(author=user_profile).order_by('-created_at')
+    # 1. Publicaciones hechas por el usuario
+    user_posts = Post.objects.filter(author=user_profile)
     
+    # 2. Proyectos que el usuario ha creado
+    user_projects = Project.objects.filter(owner=user_profile)
+    
+    # 3. Proyectos donde es colaborador (solicitudes aceptadas)
+    joined_projects = ProjectApplication.objects.filter(
+        applicant=user_profile, 
+        status='accepted'
+    )
+    liked_post_ids = request.user.likes.values_list('post_id', flat=True)
     context = {
         'user_profile': user_profile,
+        'is_own_profile': True,
         'user_posts': user_posts,
-        'is_own_profile': user_profile == request.user
+        'user_projects': user_projects,
+        'joined_projects': joined_projects,
+        'liked_post_ids': liked_post_ids,
     }
+    
     return render(request, 'users/profile.html', context)
 
 @login_required

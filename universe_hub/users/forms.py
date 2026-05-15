@@ -45,7 +45,7 @@ class StudentUserCreationForm(UserCreationForm):
 class StudentUserUpdateForm(forms.ModelForm):
     class Meta:
         model = StudentUser
-        fields = ['first_name', 'last_name', 'profile_picture', 'cover_photo', 'university', 'major', 'semester', 'bio']
+        fields = ['first_name', 'last_name', 'university', 'major', 'semester', 'bio']
         labels = {
             'university': 'Universidad',
             'major': 'Carrera',

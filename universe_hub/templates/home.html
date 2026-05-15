@@ -81,17 +81,41 @@
 
     <div class="feed">
         <div class="feed-column">
-        <!-- columna izquierda -->
-            <!-- Columna izquierda: perfil -->
-            <div>
-                <div class="post-card">
-                    <h3>Tu perfil académico</h3>
-                    <p><strong>{{ user.username }}</strong></p>
-                    <p>{{ user.university }}</p>
-                    <p>{{ user.major }} - Semestre {{ user.semester }}</p>
-                    <p style="margin-top: 0.5rem;">{{ user.bio }}</p>
-                </div>
+        <div>
+                <div class="post-card" style="text-align: center; padding: 1.5rem;">
+                    
+                    <div style="margin-bottom: 1rem; display: flex; justify-content: center;">
+                        {% if user.profile_picture %}
+                            <img src="{{ user.profile_picture.url }}" alt="Perfil" style="width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid white; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                        {% else %}
+                            <div style="width: 90px; height: 90px; border-radius: 50%; background: #f1f5f9; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; border: 3px solid white; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">👤</div>
+                        {% endif %}
+                    </div>
+                    
+                    <h3 style="margin: 0 0 5px 0; color: #1e293b; font-size: 1.2rem;">
+                        {{ user.get_full_name|default:user.username }}
+                    </h3>
+                    
+                    <p style="margin: 0 0 8px 0; color: var(--indigo-electric); font-weight: 600; font-size: 0.9rem;">
+                        {{ user.major|default:"Estudiante" }}
+                    </p>
+                    <p style="margin: 0; color: #64748b; font-size: 0.85rem;">
+                        {{ user.university|default:"Universidad no especificada" }}
+                    </p>
+                    
+                    <div style="margin-top: 12px;">
+                        <span style="background: #eff6ff; color: #1e40af; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;">
+                            {{ user.semester }}° Semestre
+                        </span>
+                    </div>
 
+                    <div style="margin-top: 15px; border-top: 1px solid #e2e8f0; padding-top: 15px;">
+                        <p style="margin: 0; font-size: 0.85rem; color: #475569; line-height: 1.5; text-align: left;">
+                            {{ user.bio|default:"No has añadido una biografía."|truncatechars:120 }}
+                        </p>
+                    </div>
+                    
+                </div>
                 <details class="sidebar-accordion">
                     <summary class="sidebar-accordion-summary">
                         <span>Mis solicitudes</span>
@@ -144,10 +168,8 @@
                 </details>
             </div>
         </div>
-        <!-- Columna central: feed de posts -->
         <div class="feed-column">
-        <!-- columna central -->
-            <div>
+        <div>
 
                 {% for post in posts %}
                     <article class="post-card" id="post-{{ post.id }}">
@@ -228,10 +250,8 @@
                 {% endfor %}
             </div>
         </div>
-        <!-- Columna derecha: proyectos abiertos -->
         <div class="feed-column">
-        <!-- columna derecha -->
-            <div>
+        <div>
                 <div class="post-card">
                     <div class="projects-header">
                         <h3>Proyectos abiertos</h3>
@@ -321,13 +341,10 @@
         </div>
     </div>
 
-    <!-- Botón flotante para post -->
     <button id="openPostModal" class="post-fab" type="button">+</button>
 
-    <!-- Overlay post -->
     <div id="postModalOverlay" class="post-modal-overlay hidden"></div>
 
-    <!-- Modal para crear post -->
     <div id="postModal" class="post-modal hidden">
         <div class="post-modal-header">
             <h3>Crear publicación</h3>
@@ -374,15 +391,12 @@
         </form>
     </div>
 
-    <!-- Botón para abrir modal de proyecto -->
     <button id="openProjectModal" class="post-fab post-fab-secondary" type="button">
         ✦
     </button>
 
-    <!-- Overlay proyecto -->
     <div id="projectModalOverlay" class="post-modal-overlay hidden"></div>
 
-    <!-- Modal Proyecto -->
     <div id="projectModal" class="post-modal project-modal hidden">
         <div class="post-modal-header">
             <h3>Publicar proyecto</h3>
