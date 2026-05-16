@@ -11,7 +11,7 @@
                 {% if user.profile_picture %}
                 <img src="{{ user.profile_picture.url }}" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #e2e8f0;">
                 {% else %}
-                <span style="font-size: 1.2rem;">👤</span>
+                <img src="/media/profile_pics/default_user.png" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #e2e8f0;">
                 {% endif %}
                 Mi Perfil <span style="font-size: 0.7rem; margin-left: 2px;">▼</span>
             </div>
@@ -43,7 +43,7 @@
     
     <div style="background: white; border-radius: 0 0 12px 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.08); position: relative; margin-bottom: 2.5rem;">
 
-        <div style="height: 240px; background: {% if user_profile.cover_photo %} url('{{ user_profile.cover_photo.url }}') {% else %} #cbd5e1 {% endif %} center/cover no-repeat; position: relative;">
+        <div style="height: 240px; background: {% if user_profile.cover_photo %} url('{{ user_profile.cover_photo.url }}') {% else %} url('/media/cover_photos/default_cover.png') {% endif %} center/cover no-repeat; position: relative;">
             {% if is_own_profile %}
             <form id="form-cover" method="POST" enctype="multipart/form-data" style="display: none;">
                 {% csrf_token %}
@@ -59,7 +59,7 @@
             {% if user_profile.profile_picture %}
             <img src="{{ user_profile.profile_picture.url }}" style="width: 100%; height: 100%; object-fit: cover;">
             {% else %}
-            <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #f1f5f9; font-size: 4rem;">👤</div>
+            <img src="/media/profile_pics/default_user.png" style="width: 100%; height: 100%; object-fit: cover;">
             {% endif %}
 
             {% if is_own_profile %}
