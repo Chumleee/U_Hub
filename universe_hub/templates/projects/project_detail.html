@@ -276,9 +276,11 @@
         {% if messages %}
             <div class="messages-wrapper">
                 {% for message in messages %}
-                    <div class="alert-message {{ message.tags }}">
-                        {{ message }}
-                    </div>
+                    {% if 'solicitud' in message.message|lower or 'proyecto' in message.message|lower or 'formas parte' in message.message|lower %}
+                        <div class="alert-message {{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    {% endif %}
                 {% endfor %}
             </div>
         {% endif %}
